@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Transparência — Remuneração dos Servidores</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --pri: #2B4ACF;
+  --pri-d: #1a3199;
+  --pri-l: #5570e8;
+  --sec: #C92D45;
+  --sec-l: #e8536a;
+  --bg: #F4F5F9;
+  --card: #fff;
+  --text: #141829;
+  --dim: #6C7186;
+  --brd: #E4E6EF;
+  --brd-l: #EDEEF5;
+  --r: 14px;
+  --sh: 0 1px 4px rgba(43,74,207,.06), 0 4px 16px rgba(43,74,207,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.45}
+
+/* ─── HEADER ─── */
+.hdr{background:linear-gradient(135deg,var(--pri) 0%,var(--pri-d) 100%);padding:28px 20px 22px;position:relative;overflow:hidden}
+.hdr::after{content:'';position:absolute;top:-60%;right:-25%;width:420px;height:420px;background:radial-gradient(circle,rgba(255,255,255,.07),transparent 65%);border-radius:50%}
+.hdr-inner{max-width:960px;margin:0 auto;position:relative;z-index:1}
+.hdr-tag{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:12px}
+.hdr h1{font-size:clamp(20px,5vw,30px);font-weight:800;color:#fff;letter-spacing:-.3px;margin-bottom:4px}
+.hdr p{color:rgba(255,255,255,.7);font-size:13px;font-weight:500}
+.hdr-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sec),var(--sec-l),var(--pri-l),var(--pri))}
+
+/* ─── CONTAINER ─── */
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+
+/* ─── MONTH TOGGLE ─── */
+.mtog{display:flex;gap:6px;margin-bottom:18px;background:var(--card);border-radius:10px;padding:3px;border:1px solid var(--brd);box-shadow:var(--sh)}
+.mtog button{flex:1;font-family:inherit;font-size:13px;font-weight:700;padding:10px 0;border:none;background:transparent;color:var(--dim);cursor:pointer;border-radius:8px;transition:all .2s}
+.mtog button.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px rgba(43,74,207,.25)}
+
+/* ─── STAT ROW ─── */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.st{background:var(--card);border-radius:var(--r);padding:16px;border:1px solid var(--brd);box-shadow:var(--sh);position:relative;overflow:hidden}
+.st::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--pri)}
+.st:nth-child(2)::before{background:var(--sec)}
+.st:nth-child(3)::before{background:var(--pri-l)}
+.st:nth-child(4)::before{background:var(--sec-l)}
+.st-lab{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:4px}
+.st-val{font-size:22px;font-weight:800;color:var(--pri);letter-spacing:-.3px}
+.st:nth-child(2) .st-val{color:var(--sec)}
+
+/* ─── TABS ─── */
+.tabs{display:flex;gap:3px;background:var(--card);border-radius:10px;padding:3px;margin-bottom:18px;border:1px solid var(--brd);box-shadow:var(--sh);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs button{flex:1;font-family:inherit;font-size:12px;font-weight:700;padding:10px 8px;border:none;background:transparent;color:var(--dim);cursor:pointer;border-radius:8px;transition:all .2s;white-space:nowrap;min-width:0}
+.tabs button.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px rgba(43,74,207,.25)}
+.pnl{display:none}.pnl.on{display:block}
+
+/* ─── SEARCH & FILTERS ─── */
+.fbar{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.fbar-row{display:flex;gap:8px}
+.srch-w{position:relative;flex:1}
+.srch-w svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none}
+.srch{width:100%;padding:12px 12px 12px 42px;border:2px solid var(--brd);border-radius:10px;font-family:inherit;font-size:15px;background:var(--card);outline:none;transition:border .2s}
+.srch:focus{border-color:var(--pri)}
+.srch::placeholder{color:#b0b5c8}
+.sel{flex:1;padding:12px 32px 12px 12px;border:2px solid var(--brd);border-radius:10px;font-family:inherit;font-size:13px;background:var(--card);color:var(--text);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236C7186' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border .2s;min-width:0}
+.sel:focus{border-color:var(--pri)}
+.fbadges{display:flex;gap:6px;flex-wrap:wrap}
+.fbadge{display:inline-flex;align-items:center;gap:5px;background:rgba(43,74,207,.07);border:1px solid rgba(43,74,207,.18);color:var(--pri);font-size:11px;font-weight:700;padding:5px 10px;border-radius:16px}
+.fbadge .x{cursor:pointer;opacity:.5;font-size:14px;line-height:1}.fbadge .x:hover{opacity:1}
+.fcount{font-size:12px;color:var(--dim);font-weight:600;margin-bottom:6px}
+
+/* ─── CARD LIST (mobile-first) ─── */
+.clist{display:flex;flex-direction:column;gap:8px}
+.citem{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px 16px;box-shadow:var(--sh);transition:border-color .15s}
+.citem:active{border-color:var(--pri)}
+.ci-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.ci-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;flex:1;word-break:break-word}
+.ci-mat{font-size:11px;font-weight:600;color:var(--dim);white-space:nowrap;background:var(--brd-l);padding:2px 8px;border-radius:10px;flex-shrink:0}
+.ci-func{font-size:12px;color:var(--pri);font-weight:600;cursor:pointer;margin-bottom:10px;display:inline-block}
+.ci-func:hover{text-decoration:underline}
+.ci-vals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ci-v{text-align:center;background:var(--bg);border-radius:8px;padding:8px 4px}
+.ci-v-lab{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:2px}
+.ci-v-num{font-size:13px;font-weight:800;color:var(--text)}
+.ci-v:first-child .ci-v-num{color:var(--pri)}
+
+/* ─── DESKTOP TABLE (hidden on mobile) ─── */
+.dtable-w{display:none;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--brd);overflow:hidden}
+.dtable-s{overflow-x:auto;max-height:620px}
+.dtable{width:100%;border-collapse:collapse;font-size:13px}
+.dtable thead{position:sticky;top:0;z-index:2}
+.dtable th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;background:var(--pri);padding:12px 14px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:background .15s}
+.dtable th:hover{background:var(--pri-d)}
+.dtable th.num{text-align:right}
+.dtable th .sa{opacity:.35;margin-left:3px;font-size:9px}.dtable th.sorted .sa{opacity:1}
+.dtable td{padding:10px 14px;border-bottom:1px solid var(--brd-l);white-space:nowrap}
+.dtable td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.dtable tr:nth-child(even) td{background:rgba(43,74,207,.012)}
+.dtable tr:hover td{background:rgba(43,74,207,.05)!important}
+.dtable .fn{max-width:220px;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:12px;cursor:pointer;transition:color .15s}
+.dtable .fn:hover{color:var(--pri);text-decoration:underline}
+
+/* ─── PAGINATION ─── */
+.pgn{display:flex;align-items:center;justify-content:space-between;padding:14px 0;flex-wrap:wrap;gap:10px}
+.pgn-info{font-size:12px;color:var(--dim);font-weight:600}
+.pgn-btns{display:flex;gap:4px;flex-wrap:wrap}
+.pg{font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border:1px solid var(--brd);background:var(--card);border-radius:8px;cursor:pointer;color:var(--text);transition:all .15s}
+.pg:hover{border-color:var(--pri);color:var(--pri)}
+.pg.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.pg:disabled{opacity:.35;cursor:not-allowed}
+
+/* ─── CARGO CARDS ─── */
+.cg-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.cg-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--brd);box-shadow:var(--sh);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;position:relative;overflow:hidden}
+.cg-card:hover,.cg-card:active{transform:translateY(-1px);box-shadow:0 4px 20px rgba(43,74,207,.1);border-color:var(--pri)}
+.cg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--pri)}
+.cg-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:8px}
+.cg-row{display:flex;gap:12px}
+.cg-s{font-size:11px;color:var(--dim);font-weight:500}
+.cg-s strong{display:block;font-size:16px;font-weight:800;color:var(--pri);margin-top:1px}
+
+/* ─── CHARTS ─── */
+.ch-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.ch-card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border:1px solid var(--brd)}
+.ch-t{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.ch-sub{font-size:12px;color:var(--dim);margin-bottom:16px;font-weight:500}
+
+/* ─── MODAL ─── */
+.moverlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:1000;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.moverlay.show{display:flex}
+.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:900px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.m-head{padding:20px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff}
+.m-head h2{font-size:16px;font-weight:800;flex:1;margin-right:12px}
+.m-close{width:34px;height:34px;border:none;background:rgba(255,255,255,.18);color:#fff;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.m-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:16px 20px;background:rgba(43,74,207,.03);border-bottom:1px solid var(--brd)}
+.m-st-lab{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dim)}
+.m-st-val{font-size:17px;font-weight:800;color:var(--pri)}
+.m-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding:0 0 20px}
+.m-body .clist{padding:12px 16px;gap:8px}
+.m-handle{width:36px;height:4px;background:rgba(255,255,255,.35);border-radius:2px;margin:0 auto 8px}
+
+/* ─── LOADING ─── */
+.loader{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.spin{width:40px;height:40px;border:3px solid var(--brd);border-top-color:var(--pri);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loader span{font-size:13px;font-weight:700;color:var(--dim)}
+
+.footer{text-align:center;padding:24px 16px;color:var(--dim);font-size:11px;font-weight:500}
+
+/* ─── DESKTOP BREAKPOINT ─── */
+@media(min-width:768px){
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .clist{display:none!important}
+  .dtable-w{display:block!important}
+  .ch-grid{grid-template-columns:1fr 1fr}
+  .ch-card.full{grid-column:1/-1}
+  .cg-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{border-radius:20px;max-height:85vh;align-self:center}
+  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .m-handle{display:none}
+  .m-stats{grid-template-columns:repeat(4,1fr)}
+  .m-body .clist{display:none!important}
+  .m-body .dtable-w{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="spin"></div><span>Carregando dados...</span></div>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-tag">Portal de Transparência</div>
+    <h1>Remuneração dos Servidores</h1>
+    <p>Consulta pública — Janeiro e Fevereiro 2026</p>
+  </div>
+  <div class="hdr-bar"></div>
+</div>
+
+<div class="wrap">
+  <div class="mtog">
+    <button class="on" id="bJan" onclick="switchMonth('jan')">Janeiro 2026</button>
+    <button id="bFev" onclick="switchMonth('fev')">Fevereiro 2026</button>
+  </div>
+
+  <div class="stats">
+    <div class="st"><div class="st-lab">Servidores</div><div class="st-val" id="sT">—</div></div>
+    <div class="st"><div class="st-lab">Folha Total</div><div class="st-val" id="sF">—</div></div>
+    <div class="st"><div class="st-lab">Média Bruto</div><div class="st-val" id="sM">—</div></div>
+    <div class="st"><div class="st-lab">Cargos</div><div class="st-val" id="sC">—</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="on" data-t="srv" onclick="sTab('srv')">Servidores</button>
+    <button data-t="crg" onclick="sTab('crg')">Por Cargo</button>
+    <button data-t="grf" onclick="sTab('grf')">Gráficos</button>
+  </div>
+
+  <!-- SERVIDORES -->
+  <div class="pnl on" id="p-srv">
+    <div class="fbar">
+      <div class="srch-w">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="srch" id="qI" placeholder="Nome ou matrícula..." oninput="doFilter()">
+      </div>
+      <div class="fbar-row">
+        <select class="sel" id="fF" onchange="doFilter()">
+          <option value="">Todos os Cargos</option>
+          <option value="AGENTE ADMINISTRATIVO">AGENTE ADMINISTRATIVO</option><option value="AGENTE COMUNITARIO DE SAUDE (ACS)">AGENTE COMUNITARIO DE SAUDE (ACS)</option><option value="AGENTE DE COMBATE AS ENDEMIAS (ACE)">AGENTE DE COMBATE AS ENDEMIAS (ACE)</option><option value="AGENTE DE DEFESA DO CONSUMIDOR">AGENTE DE DEFESA DO CONSUMIDOR</option><option value="AGENTE DE TRANSPORTE E TRANSITO">AGENTE DE TRANSPORTE E TRANSITO</option><option value="AGENTE MUNICIPAL">AGENTE MUNICIPAL</option><option value="AGENTE MUNICIPAL - MERENDA">AGENTE MUNICIPAL - MERENDA</option><option value="ALMOXARIFE">ALMOXARIFE</option><option value="ANALISTA DE COMUNICACAO">ANALISTA DE COMUNICACAO</option><option value="ANALISTA DE MEIO AMBIENTE">ANALISTA DE MEIO AMBIENTE</option><option value="ANALISTA DE PLANEJAMENTO E GESTAO">ANALISTA DE PLANEJAMENTO E GESTAO</option><option value="ANALISTA DE TURISMO">ANALISTA DE TURISMO</option><option value="ANALISTA JURÍDICO">ANALISTA JURÍDICO</option><option value="ARQUITETO">ARQUITETO</option><option value="ASSESSOR DE POLITICAS PUBLICAS">ASSESSOR DE POLITICAS PUBLICAS</option><option value="ASSESSOR DE SAUDE">ASSESSOR DE SAUDE</option><option value="ASSESSOR ESPECIAL">ASSESSOR ESPECIAL</option><option value="ASSESSOR TECNICO ADMINISTRATIVO">ASSESSOR TECNICO ADMINISTRATIVO</option><option value="ASSESSOR TECNICO DA CONTROLADORIA GERAL DO MUNICIPIO">ASSESSOR TECNICO DA CONTROLADORIA GERAL DO MUNICIPIO</option><option value="ASSISTENTE ADMINISTRATIVO I">ASSISTENTE ADMINISTRATIVO I</option><option value="ASSISTENTE DE  DESENVOLVIMENTO">ASSISTENTE DE  DESENVOLVIMENTO</option><option value="ASSISTENTE SOCIAL">ASSISTENTE SOCIAL</option><option value="ASSISTENTE TECNICO ADMINISTRATIVO I">ASSISTENTE TECNICO ADMINISTRATIVO I</option><option value="ATENDENTE DE ENFERMAGEM">ATENDENTE DE ENFERMAGEM</option><option value="AUXILIAR DE DESENVOLVIMENTO INFANTIL">AUXILIAR DE DESENVOLVIMENTO INFANTIL</option><option value="AUXILIAR DE ENFERMAGEM">AUXILIAR DE ENFERMAGEM</option><option value="AUXILIAR DE SAUDE">AUXILIAR DE SAUDE</option><option value="AUXILIAR DE SAÚDE BUCAL">AUXILIAR DE SAÚDE BUCAL</option><option value="AUXILIAR EDUCACIONAL">AUXILIAR EDUCACIONAL</option><option value="BIBLIOTECARIO">BIBLIOTECARIO</option><option value="CHEFE DE GABINETE DE SECRETARIA">CHEFE DE GABINETE DE SECRETARIA</option><option value="CIRURGIAO DENTISTA">CIRURGIAO DENTISTA</option><option value="COMANDANTE DA GCM">COMANDANTE DA GCM</option><option value="COMISSIONADO">COMISSIONADO</option><option value="COMPRADOR I">COMPRADOR I</option><option value="CONDUTOR DE AMBULANCIA">CONDUTOR DE AMBULANCIA</option><option value="CONSELHEIRO TUTELAR">CONSELHEIRO TUTELAR</option><option value="CONSELHEIRO TUTELAR SUPLENTE">CONSELHEIRO TUTELAR SUPLENTE</option><option value="CONTADOR I">CONTADOR I</option><option value="COORDENADOR DE DIVISAO">COORDENADOR DE DIVISAO</option><option value="COORDENADOR GERAL EMBUPREV">COORDENADOR GERAL EMBUPREV</option><option value="COORDENADOR PEDAGOGICO">COORDENADOR PEDAGOGICO</option><option value="DIRETOR ADJUNTO DE UNIDADE ESCOLAR">DIRETOR ADJUNTO DE UNIDADE ESCOLAR</option><option value="DIRETOR ADMINISTRATIVO EMBUPREV">DIRETOR ADMINISTRATIVO EMBUPREV</option><option value="DIRETOR DE DEPARTAMENTO - COMPLEXIDADE II">DIRETOR DE DEPARTAMENTO - COMPLEXIDADE II</option><option value="DIRETOR DE DEPARTAMENTO - COMPLEXIDADE III">DIRETOR DE DEPARTAMENTO - COMPLEXIDADE III</option><option value="DIRETOR DE ESCOLA ADJUNTO">DIRETOR DE ESCOLA ADJUNTO</option><option value="DIRETOR DE ESCOLA II">DIRETOR DE ESCOLA II</option><option value="DIRETOR DE PREVIDENCIA EMBUPREV">DIRETOR DE PREVIDENCIA EMBUPREV</option><option value="DIRETOR DE UNIDADE ESCOLAR">DIRETOR DE UNIDADE ESCOLAR</option><option value="DIRETOR FINANCEIRO EMBUPREV">DIRETOR FINANCEIRO EMBUPREV</option><option value="ELETRICISTA">ELETRICISTA</option><option value="ENCARREGADO DE PLANTAO">ENCARREGADO DE PLANTAO</option><option value="ENFERMEIRO">ENFERMEIRO</option><option value="ENFERMEIRO DO PSF">ENFERMEIRO DO PSF</option><option value="ENGENHEIRO">ENGENHEIRO</option><option value="FARMACEUTICO I">FARMACEUTICO I</option><option value="FISCAL MUNICIPAL">FISCAL MUNICIPAL</option><option value="FISIOTERAPEUTA">FISIOTERAPEUTA</option><option value="FONOAUDIOLOGO I">FONOAUDIOLOGO I</option><option value="GERENTE SETORIAL">GERENTE SETORIAL</option><option value="GESTOR ESCOLA PREVIDENCIA EMBUPREV">GESTOR ESCOLA PREVIDENCIA EMBUPREV</option><option value="GESTOR TECNICO">GESTOR TECNICO</option><option value="GESTOR TECNICO GERAL">GESTOR TECNICO GERAL</option><option value="GUARDA CIVIL MUNICIPAL-1ª">GUARDA CIVIL MUNICIPAL-1ª</option><option value="GUARDA CIVIL MUNICIPAL-2º">GUARDA CIVIL MUNICIPAL-2º</option><option value="GUARDA CIVIL MUNICIPAL-3ª">GUARDA CIVIL MUNICIPAL-3ª</option><option value="GUARDA CIVIL MUNICIPAL-CLASSE DISTINTA">GUARDA CIVIL MUNICIPAL-CLASSE DISTINTA</option><option value="MECANICO">MECANICO</option><option value="MEDICO">MEDICO</option><option value="MEDICO DO PSF">MEDICO DO PSF</option><option value="MEDICO VETERINARIO">MEDICO VETERINARIO</option><option value="MONITOR DE ALUNOS">MONITOR DE ALUNOS</option><option value="MOTORISTA">MOTORISTA</option><option value="NUTRICIONISTA">NUTRICIONISTA</option><option value="OFICIAL DE MANUTENÇÃO">OFICIAL DE MANUTENÇÃO</option><option value="OPERADOR DE MAQUINAS">OPERADOR DE MAQUINAS</option><option value="OUVIDOR GERAL">OUVIDOR GERAL</option><option value="PREFEITO">PREFEITO</option><option value="PROCURADOR">PROCURADOR</option><option value="PROFESSOR ADJUNTO">PROFESSOR ADJUNTO</option><option value="PROFESSOR DE DESENVOLVIMENTO INFANTIL">PROFESSOR DE DESENVOLVIMENTO INFANTIL</option><option value="PROFESSOR EDUC. BASICA I">PROFESSOR EDUC. BASICA I</option><option value="PROFESSOR EDUC. BASICA II">PROFESSOR EDUC. BASICA II</option><option value="PSICOLOGO I">PSICOLOGO I</option><option value="PSICOPEDAGOGO">PSICOPEDAGOGO</option><option value="SECRETARIO DE ESCOLA">SECRETARIO DE ESCOLA</option><option value="SEPULTADOR">SEPULTADOR</option><option value="SUBCOMANDANTE DA GCM">SUBCOMANDANTE DA GCM</option><option value="TEC ENFERMAGEM DO PSF">TEC ENFERMAGEM DO PSF</option><option value="TECNICO DE ENFERMAGEM">TECNICO DE ENFERMAGEM</option><option value="TECNICO DE SEGURANCA DO TRABALHO">TECNICO DE SEGURANCA DO TRABALHO</option><option value="TECNICO DESPORTIVO">TECNICO DESPORTIVO</option><option value="TECNICO EM SAUDE BUCAL">TECNICO EM SAUDE BUCAL</option><option value="TECNICO EM TECNOLOGIA DA INFORMAÇÃO">TECNICO EM TECNOLOGIA DA INFORMAÇÃO</option><option value="TECNICO IMOBILIZAÇAO ORTOPEDICA">TECNICO IMOBILIZAÇAO ORTOPEDICA</option><option value="TELEFONISTA">TELEFONISTA</option><option value="TERAPEUTA OCUPACIONAL I">TERAPEUTA OCUPACIONAL I</option><option value="VICE PREFEITO">VICE PREFEITO</option>
+        </select>
+        <select class="sel" id="fX" onchange="doFilter()">
+          <option value="">Todas as Faixas</option>
+          <option value="0-2000">Até R$2k</option>
+          <option value="2000-4000">R$2k–4k</option>
+          <option value="4000-6000">R$4k–6k</option>
+          <option value="6000-8000">R$6k–8k</option>
+          <option value="8000-10000">R$8k–10k</option>
+          <option value="10000-15000">R$10k–15k</option>
+          <option value="15000-20000">R$15k–20k</option>
+          <option value="20000-999999">Acima de R$20k</option>
+        </select>
+      </div>
+    </div>
+    <div class="fbadges" id="aF"></div>
+    <div class="fcount" id="fC"></div>
+
+    <!-- MOBILE: Card list -->
+    <div class="clist" id="mCards"></div>
+
+    <!-- DESKTOP: Table -->
+    <div class="dtable-w">
+      <div class="dtable-s">
+        <table class="dtable" id="dT">
+          <thead><tr>
+            <th onclick="doSort(0)">Mat. <span class="sa">▼</span></th>
+            <th onclick="doSort(1)">Nome <span class="sa">▼</span></th>
+            <th onclick="doSort(2)">Cargo <span class="sa">▼</span></th>
+            <th class="num" onclick="doSort(3)">Bruto <span class="sa">▼</span></th>
+            <th class="num" onclick="doSort(4)">Líquido <span class="sa">▼</span></th>
+            <th class="num" onclick="doSort(5)">Inden. <span class="sa">▼</span></th>
+          </tr></thead>
+          <tbody id="dTB"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pgn">
+      <div class="pgn-info" id="pI"></div>
+      <div class="pgn-btns" id="pB"></div>
+    </div>
+  </div>
+
+  <!-- POR CARGO -->
+  <div class="pnl" id="p-crg">
+    <div class="fbar">
+      <div class="srch-w">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="srch" id="cS" placeholder="Pesquisar cargo..." oninput="renderCargos()">
+      </div>
+    </div>
+    <div class="fcount" id="cC"></div>
+    <div class="cg-grid" id="cG"></div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div class="pnl" id="p-grf">
+    <div class="ch-grid">
+      <div class="ch-card"><div class="ch-t">Distribuição Salarial</div><div class="ch-sub">Servidores por faixa de remuneração</div><canvas id="chD"></canvas></div>
+      <div class="ch-card"><div class="ch-t">Proporção por Faixa</div><div class="ch-sub">Visão percentual</div><canvas id="chP"></canvas></div>
+      <div class="ch-card full"><div class="ch-t">Top 10 Cargos</div><div class="ch-sub">Funções com mais servidores</div><canvas id="chT"></canvas></div>
+    </div>
+  </div>
+
+  <div class="footer">Portal de Transparência — Dados públicos de remuneração</div>
+</div>
+
+<!-- MODAL -->
+<div class="moverlay" id="mO" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <div class="m-head">
+      <div>
+        <div class="m-handle"></div>
+        <h2 id="mT">Cargo</h2>
+      </div>
+      <button class="m-close" onclick="closeM()">✕</button>
+    </div>
+    <div class="m-stats" id="mS"></div>
+    <div class="m-body" id="mB"></div>
+  </div>
+</div>
+
+<script>
+const BASE_URL='./';
+const FILES={jan:BASE_URL+'dados_janeiro.json',fev:BASE_URL+'dados_fevereiro.json'};
+const cache={};
+const $ = id => document.getElementById(id);
+const brl=v=>v?'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+const brlS=v=>{if(!v)return'—';if(v>=1e6)return'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+'M';if(v>=1e3)return'R$ '+(v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1})+'k';return brl(v)};
+const num=v=>v!=null?v.toLocaleString('pt-BR'):'0';
+
+let mo='jan',D=[],FN=[],DI=[],ST={},fil=[],pg=1,sC=-1,sA=true;
+const PP=40;
+
+async function loadM(m){if(cache[m])return cache[m];const r=await fetch(FILES[m]);if(!r.ok)throw new Error(r.status);cache[m]=await r.json();return cache[m]}
+function apply(p){D=p.data;FN=p.func;DI=p.dist;ST=p.stats}
+function updSt(){$('sT').textContent=num(ST.total);$('sF').textContent=brlS(ST.folha);$('sM').textContent=brlS(ST.media);$('sC').textContent=num(ST.funcoes)}
+
+async function switchMonth(m){
+  mo=m;$('bJan').classList.toggle('on',m==='jan');$('bFev').classList.toggle('on',m==='fev');
+  try{apply(await loadM(m));updSt();fil=[...D];pg=1;sC=-1;$('qI').value='';$('fF').value='';$('fX').value='';$('aF').innerHTML='';$('fC').textContent='';render();renderCargos();if(window._ci){window._ci=false;killCh()}const at=document.querySelector('.tabs button.on');if(at&&at.dataset.t==='grf')initCh()}catch(e){alert('Erro: '+e.message)}
+}
+
+function sTab(t){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));
+  if(t==='grf'&&!window._ci)initCh();
+  if(t==='crg')renderCargos();
+}
+
+function render(){
+  const s=(pg-1)*PP,page=fil.slice(s,s+PP);
+  // Mobile cards
+  $('mCards').innerHTML=page.map(r=>`<div class="citem">
+    <div class="ci-top"><span class="ci-name">${r.N}</span><span class="ci-mat">${r.M}</span></div>
+    <div class="ci-func" onclick="fByCargo('${(r.F||'').replace(/'/g,"\\'")}')">${r.F||'—'}</div>
+    <div class="ci-vals">
+      <div class="ci-v"><div class="ci-v-lab">Bruto</div><div class="ci-v-num">${brlS(r.RB)}</div></div>
+      <div class="ci-v"><div class="ci-v-lab">Líquido</div><div class="ci-v-num">${brlS(r.RL)}</div></div>
+      <div class="ci-v"><div class="ci-v-lab">Inden.</div><div class="ci-v-num">${r.I?brlS(r.I):'—'}</div></div>
+    </div></div>`).join('');
+
+  // Desktop table
+  $('dTB').innerHTML=page.map(r=>`<tr>
+    <td>${r.M}</td><td style="font-weight:600">${r.N}</td>
+    <td class="fn" onclick="fByCargo('${(r.F||'').replace(/'/g,"\\'")}')">${r.F||'—'}</td>
+    <td class="num">${brl(r.RB)}</td><td class="num">${brl(r.RL)}</td><td class="num">${brl(r.I)}</td>
+  </tr>`).join('');
+
+  const tot=fil.length,pages=Math.ceil(tot/PP);
+  $('pI').textContent=tot>0?`${s+1}–${Math.min(s+PP,tot)} de ${num(tot)}`:'Nenhum resultado';
+  let h='';
+  if(pages>0){
+    h+=`<button class="pg" onclick="goP(${pg-1})" ${pg===1?'disabled':''}>‹</button>`;
+    pgRange(pg,pages).forEach(p=>{if(p==='...')h+=`<button class="pg" disabled>…</button>`;else h+=`<button class="pg ${p===pg?'on':''}" onclick="goP(${p})">${p}</button>`});
+    h+=`<button class="pg" onclick="goP(${pg+1})" ${pg===pages?'disabled':''}>›</button>`;
+  }
+  $('pB').innerHTML=h;
+}
+
+function pgRange(c,t){if(t<=5)return Array.from({length:t},(_,i)=>i+1);const r=[1];if(c>3)r.push('...');for(let i=Math.max(2,c-1);i<=Math.min(t-1,c+1);i++)r.push(i);if(c<t-2)r.push('...');r.push(t);return r}
+function goP(p){const pages=Math.ceil(fil.length/PP);if(p<1||p>pages)return;pg=p;render();window.scrollTo({top:$('p-srv').offsetTop-60,behavior:'smooth'})}
+
+function doFilter(){
+  const q=$('qI').value.toLowerCase().trim(),fn=$('fF').value,fx=$('fX').value;
+  fil=D.filter(r=>{
+    if(q&&!(String(r.M).includes(q)||r.N.toLowerCase().includes(q)))return false;
+    if(fn&&r.F!==fn)return false;
+    if(fx){const[lo,hi]=fx.split('-').map(Number);if(r.RB<lo||r.RB>=hi)return false}
+    return true;
+  });
+  let b='';
+  if(fn)b+=`<span class="fbadge">${fn} <span class="x" onclick="clr('fn')">✕</span></span>`;
+  if(fx){const l=$('fX').selectedOptions[0].text;b+=`<span class="fbadge">${l} <span class="x" onclick="clr('fx')">✕</span></span>`}
+  $('aF').innerHTML=b;
+  pg=1;$('fC').textContent=(q||fn||fx)?`${num(fil.length)} resultado(s)`:'';render();
+}
+function clr(t){if(t==='fn')$('fF').value='';if(t==='fx')$('fX').value='';doFilter()}
+function fByCargo(c){if(!c)return;$('fF').value=c;sTab('srv');doFilter();window.scrollTo({top:0,behavior:'smooth'})}
+
+function doSort(col){
+  const k=['M','N','F','RB','RL','I'];
+  if(sC===col)sA=!sA;else{sC=col;sA=true}
+  const key=k[col];
+  fil.sort((a,b)=>{let va=a[key],vb=b[key];if(typeof va==='string'){va=va||'';vb=vb||'';return sA?va.localeCompare(vb,'pt-BR'):vb.localeCompare(va,'pt-BR')}return sA?(va||0)-(vb||0):(vb||0)-(va||0)});
+  pg=1;document.querySelectorAll('#dT th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const a=th.querySelector('.sa');if(a)a.textContent=(i===col&&!sA)?'▲':'▼'});render();
+}
+
+function renderCargos(){
+  const q=($('cS')?.value||'').toLowerCase().trim();
+  const list=FN.filter(f=>!q||f.F.toLowerCase().includes(q));
+  $('cC').textContent=q?`${list.length} cargo(s)`:`${FN.length} cargos`;
+  $('cG').innerHTML=list.map(f=>`<div class="cg-card" onclick="openM('${f.F.replace(/'/g,"\\'")}')">
+    <div class="cg-title">${f.F}</div>
+    <div class="cg-row">
+      <div class="cg-s">Servidores<strong>${num(f.qtd)}</strong></div>
+      <div class="cg-s">Média Bruto<strong>${brlS(f.mb)}</strong></div>
+      <div class="cg-s">Média Líq.<strong>${brlS(f.ml)}</strong></div>
+    </div></div>`).join('');
+}
+
+function openM(cargo){
+  const sv=D.filter(r=>r.F===cargo);
+  const tB=sv.reduce((s,r)=>s+r.RB,0),tL=sv.reduce((s,r)=>s+r.RL,0);
+  $('mT').textContent=cargo;
+  $('mS').innerHTML=`
+    <div><div class="m-st-lab">Servidores</div><div class="m-st-val">${num(sv.length)}</div></div>
+    <div><div class="m-st-lab">Média Bruto</div><div class="m-st-val">${brlS(sv.length?tB/sv.length:0)}</div></div>
+    <div><div class="m-st-lab">Média Líquido</div><div class="m-st-val">${brlS(sv.length?tL/sv.length:0)}</div></div>
+    <div><div class="m-st-lab">Total Folha</div><div class="m-st-val">${brlS(tB)}</div></div>`;
+  const sorted=[...sv].sort((a,b)=>(b.RB||0)-(a.RB||0));
+
+  // Mobile cards + Desktop table
+  $('mB').innerHTML=`
+    <div class="clist">${sorted.map(r=>`<div class="citem">
+      <div class="ci-top"><span class="ci-name">${r.N}</span><span class="ci-mat">${r.M}</span></div>
+      <div class="ci-vals">
+        <div class="ci-v"><div class="ci-v-lab">Bruto</div><div class="ci-v-num">${brlS(r.RB)}</div></div>
+        <div class="ci-v"><div class="ci-v-lab">Líquido</div><div class="ci-v-num">${brlS(r.RL)}</div></div>
+        <div class="ci-v"><div class="ci-v-lab">Inden.</div><div class="ci-v-num">${r.I?brlS(r.I):'—'}</div></div>
+      </div></div>`).join('')}</div>
+    <div class="dtable-w"><table class="dtable"><thead><tr>
+      <th>Mat.</th><th>Nome</th><th class="num">Bruto</th><th class="num">Líquido</th><th class="num">Inden.</th>
+    </tr></thead><tbody>${sorted.map(r=>`<tr>
+      <td>${r.M}</td><td style="font-weight:600">${r.N}</td><td class="num">${brl(r.RB)}</td><td class="num">${brl(r.RL)}</td><td class="num">${brl(r.I)}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+
+  $('mO').classList.add('show');document.body.style.overflow='hidden';
+}
+function closeM(){$('mO').classList.remove('show');document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+
+// Touch-to-dismiss modal
+let touchStartY=0;
+$('mO')?.querySelector('.modal')?.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
+$('mO')?.querySelector('.modal')?.addEventListener('touchmove',e=>{if(e.touches[0].clientY-touchStartY>80)closeM()},{passive:true});
+
+let ci=[];function killCh(){ci.forEach(c=>c.destroy());ci=[]}
+function initCh(){
+  killCh();window._ci=true;
+  const p='#2B4ACF',s='#C92D45',pal=['#2B4ACF','#5570e8','#7a93ed','#C92D45','#e8536a','#f07a90','#1a3199','#8fa5f0','#d87587'];
+  const mob=window.innerWidth<768;
+  ci.push(new Chart($('chD'),{type:'bar',data:{labels:DI.map(d=>d.f),datasets:[{data:DI.map(d=>d.q),backgroundColor:DI.map((_,i)=>i<5?p:s),borderRadius:5,borderSkipped:false,barPercentage:.7}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6,callbacks:{label:c=>'  '+c.parsed.y.toLocaleString('pt-BR')+' serv.'}}},scales:{y:{beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:mob?10:12}}},x:{grid:{display:false},ticks:{font:{size:mob?9:12},maxRotation:mob?45:0}}}}}));
+  ci.push(new Chart($('chP'),{type:'doughnut',data:{labels:DI.map(d=>d.f),datasets:[{data:DI.map(d=>d.q),backgroundColor:pal,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:mob?10:11},padding:8,usePointStyle:true,pointStyleWidth:6}},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6,callbacks:{label:c=>{const pct=((c.parsed/ST.total)*100).toFixed(1);return' '+c.label+': '+c.parsed.toLocaleString('pt-BR')+' ('+pct+'%)'}}}}}}));
+  const top=FN.slice(0,10);
+  ci.push(new Chart($('chT'),{type:'bar',data:{labels:top.map(f=>f.F.length>22?f.F.substring(0,22)+'…':f.F),datasets:[{data:top.map(f=>f.qtd),backgroundColor:top.map((_,i)=>i%2===0?p:s),borderRadius:5,borderSkipped:false,barPercentage:.7}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6,callbacks:{title:items=>top[items[0].dataIndex].F,label:c=>'  '+c.parsed.x.toLocaleString('pt-BR')+' serv.'}}},scales:{x:{beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:mob?10:11}}},y:{grid:{display:false},ticks:{font:{size:mob?9:11}}}}}}));
+}
+
+(async()=>{
+  try{apply(await loadM('jan'));updSt();fil=[...D];render();$('loader').classList.add('hide');setTimeout(()=>$('loader').style.display='none',400)}
+  catch(e){$('loader').innerHTML=`<div style="text-align:center;padding:40px"><h2 style="color:var(--sec);font-size:18px;margin-bottom:8px">Erro ao carregar dados</h2><p style="color:var(--dim);font-size:13px">${e.message}</p><p style="color:var(--dim);font-size:12px;margin-top:8px">Verifique se os JSONs estão acessíveis na URL configurada.</p></div>`}
+})();
+</script>
+</body>
+</html>
