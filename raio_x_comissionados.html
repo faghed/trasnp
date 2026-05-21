@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Raio-X dos Comissionados</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--pri:#2B4ACF;--pri-d:#1a3199;--pri-l:#5570e8;--sec:#C92D45;--sec-l:#e8536a;--amber:#E8890C;--bg:#F4F5F9;--card:#fff;--text:#141829;--dim:#6C7186;--brd:#E4E6EF;--brd-l:#EDEEF5;--r:14px;--sh:0 1px 4px rgba(43,74,207,.06),0 4px 16px rgba(43,74,207,.04)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.45}
+.hdr{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:32px 20px 26px;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-40%;right:-15%;width:500px;height:500px;background:radial-gradient(circle,rgba(201,45,69,.15),transparent 60%);border-radius:50%}
+.hdr::after{content:'';position:absolute;bottom:-60%;left:10%;width:600px;height:600px;background:radial-gradient(circle,rgba(43,74,207,.1),transparent 60%);border-radius:50%}
+.hdr-inner{max-width:960px;margin:0 auto;position:relative;z-index:1}
+.hdr-tag{display:inline-block;background:rgba(201,45,69,.2);border:1px solid rgba(201,45,69,.3);color:var(--sec-l);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:12px}
+.hdr h1{font-size:clamp(22px,5vw,34px);font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
+.hdr h1 em{font-style:normal;color:var(--sec-l)}
+.hdr p{color:rgba(255,255,255,.55);font-size:13px;font-weight:500}
+.hdr-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sec),var(--amber),var(--pri-l),var(--pri))}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+
+.mtog{display:flex;gap:6px;margin-bottom:20px;background:var(--card);border-radius:10px;padding:3px;border:1px solid var(--brd);box-shadow:var(--sh)}
+.mtog button{flex:1;font-family:inherit;font-size:13px;font-weight:700;padding:10px 0;border:none;background:transparent;color:var(--dim);cursor:pointer;border-radius:8px;transition:all .2s}
+.mtog button.on{background:var(--sec);color:#fff;box-shadow:0 2px 8px rgba(201,45,69,.25)}
+
+/* Big numbers */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.hero-card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--brd);box-shadow:var(--sh);position:relative;overflow:hidden}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.hero-card.red::before{background:var(--sec)}
+.hero-card.blue::before{background:var(--pri)}
+.hero-card.amber::before{background:var(--amber)}
+.hero-card.dim::before{background:var(--dim)}
+.h-lab{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:6px}
+.h-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.5px}
+.h-val.red{color:var(--sec)}
+.h-val.blue{color:var(--pri)}
+.h-val.amber{color:var(--amber)}
+.h-sub{font-size:11px;color:var(--dim);margin-top:4px;font-weight:600}
+.h-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px}
+.h-badge.up{background:rgba(201,45,69,.08);color:var(--sec)}
+.h-badge.neutral{background:rgba(108,113,134,.08);color:var(--dim)}
+
+/* Comparison bar */
+.cmp{background:var(--card);border-radius:var(--r);padding:20px;border:1px solid var(--brd);box-shadow:var(--sh);margin-bottom:20px}
+.cmp-title{font-size:14px;font-weight:800;margin-bottom:14px}
+.cmp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cmp-label{font-size:11px;font-weight:700;color:var(--dim);width:80px;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px}
+.cmp-bars{flex:1;display:flex;gap:3px;align-items:center;height:32px}
+.cmp-bar{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#fff;min-width:40px;transition:width .6s ease;padding:0 8px}
+.cmp-bar.red{background:var(--sec)}
+.cmp-bar.blue{background:var(--pri)}
+.cmp-sep{font-size:10px;color:var(--dim);font-weight:700}
+
+/* Chart cards */
+.ch-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px}
+.ch-card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border:1px solid var(--brd)}
+.ch-t{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.ch-sub{font-size:12px;color:var(--dim);margin-bottom:16px;font-weight:500}
+
+/* Table */
+.tbl-w{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--brd);overflow:hidden;margin-bottom:20px}
+.tbl-hdr{padding:18px 20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.tbl-hdr h3{font-size:15px;font-weight:800}
+.tbl-hdr .count{font-size:12px;color:var(--dim);font-weight:600}
+.tbl-s{overflow-x:auto;max-height:500px;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.tbl thead{position:sticky;top:0;z-index:2}
+.tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#fff;background:var(--sec);padding:10px 14px;text-align:left;white-space:nowrap}
+.tbl th.num{text-align:right}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--brd-l);white-space:nowrap}
+.tbl td.num{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.tbl tr:nth-child(even) td{background:rgba(201,45,69,.01)}
+.tbl tr:hover td{background:rgba(201,45,69,.04)!important}
+.tbl td.name{font-weight:600;max-width:250px;overflow:hidden;text-overflow:ellipsis}
+
+/* Mobile cards for table */
+.mob-list{display:flex;flex-direction:column;gap:8px;padding:12px 16px}
+.mob-item{background:var(--bg);border:1px solid var(--brd-l);border-radius:10px;padding:12px 14px}
+.mob-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.mob-name{font-size:13px;font-weight:700;flex:1;word-break:break-word}
+.mob-rank{font-size:10px;font-weight:700;color:var(--sec);background:rgba(201,45,69,.08);padding:2px 8px;border-radius:10px;flex-shrink:0}
+.mob-vals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mob-v{text-align:center}
+.mob-v-lab{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dim)}
+.mob-v-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
+
+/* Insight cards */
+.insights{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:20px}
+.ins{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--brd);box-shadow:var(--sh);border-left:4px solid var(--sec)}
+.ins-title{font-size:13px;font-weight:800;color:var(--sec);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.ins-body{font-size:13px;color:var(--text);line-height:1.6;font-weight:500}
+.ins-body strong{font-weight:800;color:var(--sec)}
+.ins:nth-child(2){border-left-color:var(--amber)}
+.ins:nth-child(2) .ins-title{color:var(--amber)}
+.ins:nth-child(2) .ins-body strong{color:var(--amber)}
+.ins:nth-child(3){border-left-color:var(--amber)}
+.ins:nth-child(3) .ins-title{color:var(--amber)}
+.ins:nth-child(3) .ins-body strong{color:var(--amber)}
+
+.footer{text-align:center;padding:24px 16px;color:var(--dim);font-size:11px;font-weight:500}
+.loader{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+.loader.hide{opacity:0;pointer-events:none}
+.spin{width:40px;height:40px;border:3px solid var(--brd);border-top-color:var(--sec);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media(min-width:768px){
+  .hero{grid-template-columns:repeat(4,1fr)}
+  .ch-grid{grid-template-columns:1fr 1fr}
+  .ch-card.full{grid-column:1/-1}
+  .insights{grid-template-columns:1fr 1fr 1fr}
+  .mob-list{display:none!important}
+  .tbl-s{display:block!important}
+  .h-val{font-size:24px}
+}
+@media(max-width:767px){
+  .tbl-s{display:none!important}
+  .mob-list{display:flex!important}
+}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="spin"></div><span style="font-size:13px;font-weight:700;color:var(--dim)">Carregando...</span></div>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-tag">Análise Especial</div>
+    <h1>Raio-X dos <em>Comissionados</em></h1>
+    <p>Comparativo entre cargos comissionados e demais servidores · Valores em Reais (R$)<br>Base: comissionados identificados em Jun/2025 — nomeações posteriores podem não constar</p>
+  </div>
+  <div class="hdr-bar"></div>
+</div>
+
+<div class="wrap">
+  <div class="mtog">
+    <button class="on" id="bJan" onclick="go('jan')">Janeiro</button>
+    <button id="bFev" onclick="go('fev')">Fevereiro</button>
+    <button id="bAbr" onclick="go('abr')">Abril</button>
+  </div>
+
+  <!-- Key insights -->
+  <div class="insights" id="insights"></div>
+
+  <!-- Hero numbers -->
+  <div class="hero" id="hero"></div>
+
+  <!-- Comparison bars -->
+  <div class="cmp" id="cmpBlock"></div>
+
+  <!-- Charts -->
+  <div class="ch-grid">
+    <div class="ch-card">
+      <div class="ch-t">Distribuição Salarial</div>
+      <div class="ch-sub">Comissionados vs Demais por faixa</div>
+      <canvas id="chDist"></canvas>
+    </div>
+    <div class="ch-card">
+      <div class="ch-t">Evolução Mensal</div>
+      <div class="ch-sub">Comissionados identificados (base Jun/2025) — não inclui nomeações posteriores</div>
+      <canvas id="chEvo"></canvas>
+    </div>
+    <div class="ch-card full">
+      <div class="ch-t">Proporção na Folha</div>
+      <div class="ch-sub">Peso dos comissionados no total</div>
+      <canvas id="chProp"></canvas>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="tbl-w">
+    <div class="tbl-hdr">
+      <h3>Todos os Comissionados</h3>
+      <span class="count" id="tblCount"></span>
+    </div>
+    <div class="tbl-s">
+      <table class="tbl">
+        <thead><tr>
+          <th>#</th><th>Nome</th><th class="num">Bruto</th><th class="num">Líquido</th><th class="num">Inden.</th>
+        </tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+    <div class="mob-list" id="mobList"></div>
+  </div>
+
+  <div class="footer">Portal de Transparência — Análise de Cargos Comissionados</div>
+</div>
+
+<script>
+const BASE_URL='./';
+const $=id=>document.getElementById(id);
+const brl=v=>v?v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+const num=v=>v!=null?v.toLocaleString('pt-BR'):'0';
+const pct=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'0%';
+
+let DATA, cur='jan';
+let charts=[];
+
+async function init(){
+  try{
+    const r=await fetch(BASE_URL+'dados_comissionados.json');
+    DATA=await r.json();
+    render();
+    $('loader').classList.add('hide');
+    setTimeout(()=>$('loader').style.display='none',400);
+  }catch(e){
+    $('loader').innerHTML=`<div style="text-align:center;padding:40px"><h2 style="color:var(--sec);font-size:18px">Erro ao carregar</h2><p style="color:var(--dim);font-size:13px">${e.message}</p></div>`;
+  }
+}
+
+function go(m){
+  cur=m;
+  ['jan','fev','abr'].forEach(k=>{
+    const b=$('b'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(b)b.classList.toggle('on',k===m);
+  });
+  render();
+}
+
+function render(){
+  const d=DATA.months[cur];
+  
+  // Insights
+  const razao=(d.avg_com/d.avg_ncom).toFixed(2);
+  const pctFolha=((d.folha_com/d.folha_total)*100).toFixed(1);
+  const pctQtd=((d.qtd_com/d.total)*100).toFixed(1);
+  $('insights').innerHTML=`
+    <div class="ins"><div class="ins-title">⚡ Peso na Folha</div><div class="ins-body">Os comissionados identificados representam <strong>${pctQtd}%</strong> dos servidores e consomem <strong>${pctFolha}%</strong> da folha de pagamento — <strong>${brl(d.folha_com)}</strong> por mês. O número real pode ser maior, pois nomeações após Jun/2025 podem não constar nesta base.</div></div>
+    <div class="ins"><div class="ins-title">📊 Remuneração Média</div><div class="ins-body">Um comissionado ganha em média <strong>${razao}x mais</strong> que os demais servidores — <strong>${brl(d.avg_com)}</strong> contra <strong>${brl(d.avg_ncom)}</strong> bruto mensal.</div></div>
+    <div class="ins"><div class="ins-title">⚠️ Limitação dos Dados</div><div class="ins-body">Esta análise identifica apenas comissionados presentes na base de <strong>Jun/2025</strong>. Servidores nomeados após essa data <strong>não aparecem</strong>. A queda de ${DATA.months.jan.qtd_com} (Jan) para ${DATA.months.abr.qtd_com} (Abr) reflete exonerações, mas o total real de comissionados ativos pode ser diferente.</div></div>`;
+  
+  // Hero cards
+  $('hero').innerHTML=`
+    <div class="hero-card red"><div class="h-lab">Comissionados Identificados</div><div class="h-val red">${num(d.qtd_com)}</div><div class="h-sub">${pctQtd}% do total na folha</div></div>
+    <div class="hero-card amber"><div class="h-lab">Folha Comissionados</div><div class="h-val amber">${brl(d.folha_com)}</div><div class="h-sub">${pctFolha}% da folha</div></div>
+    <div class="hero-card blue"><div class="h-lab">Média Bruto COM</div><div class="h-val blue">${brl(d.avg_com)}</div><div class="h-sub">Mediana: ${brl(d.med_com)}</div></div>
+    <div class="hero-card dim"><div class="h-lab">Média Bruto Demais</div><div class="h-val" style="color:var(--dim)">${brl(d.avg_ncom)}</div><div class="h-sub">Mediana: ${brl(d.med_ncom)}</div></div>`;
+  
+  // Comparison bars
+  const maxVal=Math.max(d.avg_com,d.avg_ncom,d.med_com,d.med_ncom,d.max_com);
+  function barW(v){return Math.max(8,v/maxVal*100)+'%'}
+  $('cmpBlock').innerHTML=`
+    <div class="cmp-title">Comissionados × Demais Servidores</div>
+    <div class="cmp-row"><span class="cmp-label">Média</span><div class="cmp-bars"><div class="cmp-bar red" style="width:${barW(d.avg_com)}">${brl(d.avg_com)}</div><span class="cmp-sep">vs</span><div class="cmp-bar blue" style="width:${barW(d.avg_ncom)}">${brl(d.avg_ncom)}</div></div></div>
+    <div class="cmp-row"><span class="cmp-label">Mediana</span><div class="cmp-bars"><div class="cmp-bar red" style="width:${barW(d.med_com)}">${brl(d.med_com)}</div><span class="cmp-sep">vs</span><div class="cmp-bar blue" style="width:${barW(d.med_ncom)}">${brl(d.med_ncom)}</div></div></div>
+    <div class="cmp-row"><span class="cmp-label">Teto</span><div class="cmp-bars"><div class="cmp-bar red" style="width:${barW(d.max_com)}">${brl(d.max_com)}</div><span class="cmp-sep">vs</span><div class="cmp-bar blue" style="width:${barW(d.max_ncom)}">${brl(d.max_ncom)}</div></div></div>
+    <div class="cmp-row"><span class="cmp-label">Inden. Total</span><div class="cmp-bars"><div class="cmp-bar red" style="width:${d.ind_com>0?Math.max(8,d.ind_com/(d.ind_com+d.ind_ncom)*100):8}%">${brl(d.ind_com)}</div><span class="cmp-sep">vs</span><div class="cmp-bar blue" style="width:${d.ind_ncom>0?Math.max(8,d.ind_ncom/(d.ind_com+d.ind_ncom)*100):8}%">${brl(d.ind_ncom)}</div></div></div>`;
+
+  // Table
+  $('tblCount').textContent=d.qtd_com+' servidores';
+  $('tblBody').innerHTML=d.all_com.map((r,i)=>`<tr>
+    <td style="color:var(--dim);font-weight:700">${i+1}</td>
+    <td class="name">${r.N}</td>
+    <td class="num">${brl(r.RB)}</td>
+    <td class="num">${brl(r.RL)}</td>
+    <td class="num">${r.I?brl(r.I):'—'}</td>
+  </tr>`).join('');
+  
+  $('mobList').innerHTML=d.all_com.map((r,i)=>`<div class="mob-item">
+    <div class="mob-top"><span class="mob-name">${r.N}</span><span class="mob-rank">#${i+1}</span></div>
+    <div class="mob-vals">
+      <div class="mob-v"><div class="mob-v-lab">Bruto</div><div class="mob-v-num">${brl(r.RB)}</div></div>
+      <div class="mob-v"><div class="mob-v-lab">Líquido</div><div class="mob-v-num">${brl(r.RL)}</div></div>
+      <div class="mob-v"><div class="mob-v-lab">Inden.</div><div class="mob-v-num">${r.I?brl(r.I):'—'}</div></div>
+    </div></div>`).join('');
+
+  renderCharts(d);
+}
+
+function renderCharts(d){
+  charts.forEach(c=>c.destroy());charts=[];
+  const red='#C92D45',blue='#2B4ACF',redL='rgba(201,45,69,.15)',blueL='rgba(43,74,207,.15)';
+  const mob=window.innerWidth<768;
+
+  // Distribution
+  charts.push(new Chart($('chDist'),{type:'bar',data:{
+    labels:d.faixas,
+    datasets:[
+      {label:'Comissionados',data:d.dist_com,backgroundColor:red,borderRadius:4,barPercentage:.45,categoryPercentage:.8},
+      {label:'Demais',data:d.dist_ncom,backgroundColor:blue,borderRadius:4,barPercentage:.45,categoryPercentage:.8}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'700'},usePointStyle:true,pointStyleWidth:6,padding:10}},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6}},scales:{y:{beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:mob?10:12}}},x:{grid:{display:false},ticks:{font:{size:mob?9:11},maxRotation:mob?45:0}}}}}));
+
+  // Evolution
+  const mLabels=['Jan','Fev','Abr'];
+  const mKeys=['jan','fev','abr'];
+  charts.push(new Chart($('chEvo'),{type:'bar',data:{
+    labels:mLabels,
+    datasets:[
+      {label:'Quantidade',data:mKeys.map(k=>DATA.months[k].qtd_com),backgroundColor:red,borderRadius:4,barPercentage:.5,yAxisID:'y'},
+      {label:'Folha (÷1000)',data:mKeys.map(k=>Math.round(DATA.months[k].folha_com/1000)),backgroundColor:blue,borderRadius:4,barPercentage:.5,yAxisID:'y1'}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'700'},usePointStyle:true,pointStyleWidth:6,padding:10}},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6}},scales:{y:{beginAtZero:true,position:'left',grid:{color:'#eef0f5'},title:{display:!mob,text:'Qtd',font:{size:11,weight:'700'}},ticks:{font:{size:11}}},y1:{beginAtZero:true,position:'right',grid:{display:false},title:{display:!mob,text:'Folha (mil)',font:{size:11,weight:'700'}},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:12,weight:'700'}}}}}}));
+
+  // Proportion stacked
+  charts.push(new Chart($('chProp'),{type:'bar',data:{
+    labels:mLabels,
+    datasets:[
+      {label:'Comissionados',data:mKeys.map(k=>Math.round(DATA.months[k].folha_com)),backgroundColor:red,borderRadius:0},
+      {label:'Demais',data:mKeys.map(k=>Math.round(DATA.months[k].folha_ncom)),backgroundColor:blue,borderRadius:0}
+    ]},options:{indexAxis:'y',responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11,weight:'700'},usePointStyle:true,pointStyleWidth:6,padding:10}},tooltip:{backgroundColor:'#141829',padding:10,cornerRadius:6,callbacks:{label:ctx=>' '+ctx.dataset.label+': '+ctx.parsed.x.toLocaleString('pt-BR')}}},scales:{x:{stacked:true,beginAtZero:true,grid:{color:'#eef0f5'},ticks:{font:{size:11},callback:v=>(v/1e6).toFixed(1)+'M'}},y:{stacked:true,grid:{display:false},ticks:{font:{size:12,weight:'700'}}}}}}));
+}
+
+init();
+</script>
+</body>
+</html>
