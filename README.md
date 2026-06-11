@@ -1,6 +1,6 @@
-# Portal de Transparência — Remuneração dos Servidores
+# Portal de Transparência — Remuneração dos Servidores por Sindicato dos Servidores Públicos de Embu das Artes - SP
 
-Visualização interativa dos dados públicos de remuneração dos servidores municipais, com foco em transparência, acessibilidade e fiscalização cidadã.
+Visualização interativa dos dados públicos de remuneração dos servidores municipais de Embu das Artes, com foco em transparência, acessibilidade e fiscalização cidadã.
 
 ## O que é
 
