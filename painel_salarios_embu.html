@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salários × Inflação · Embu das Artes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f6; --card:#ffffff; --soft:#f5f7fb;
+  --primary:#2e3daf; --primary-2:#3d4fd6; --primary-ink:#26339a;
+  --red:#e23744; --red-soft:#fdecec;
+  --ink:#1f2a44; --muted:#8b93a6; --label:#98a1b3; --line:#e6e9f0; --line-2:#dbe0ea;
+  --ok:#1f9d6b;
+  --shadow:0 1px 2px rgba(31,42,68,.04), 0 10px 26px -18px rgba(31,42,68,.28);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Poppins",system-ui,-apple-system,sans-serif; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px; margin:0 auto; padding:20px 16px 60px;}
+.num{font-variant-numeric:tabular-nums;}
+.red{color:var(--red)} .blue{color:var(--primary)} .ok{color:var(--ok)}
+
+/* header */
+.head{margin-bottom:18px;}
+.head .badge{display:inline-block; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--primary); background:#e8ebfa; padding:5px 11px; border-radius:20px;}
+.head h1{font-size:clamp(20px,4.4vw,29px); font-weight:700; margin:12px 0 4px; letter-spacing:-.01em; line-height:1.15;}
+.head p{color:var(--muted); font-size:13.5px; margin:0; max-width:70ch;}
+
+/* card base */
+.card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); position:relative;}
+.card::before{content:""; position:absolute; left:16px; right:16px; top:0; height:3px; border-radius:0 0 3px 3px; background:var(--primary);}
+.card.red-top::before{background:var(--red);}
+.card.plain::before{display:none;}
+
+/* ===== HERO seletor + frase ===== */
+.hero{padding:20px 20px 22px; margin-bottom:16px;}
+.hero .lbl{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--label); margin-bottom:8px;}
+.selwrap{position:relative;}
+.selwrap select{width:100%; appearance:none; -webkit-appearance:none; font-family:inherit; font-size:16px; font-weight:600;
+  color:var(--primary-ink); background:var(--soft); border:1.5px solid var(--line-2); border-radius:12px;
+  padding:14px 44px 14px 16px; cursor:pointer; outline:none;}
+.selwrap select:focus{border-color:var(--primary-2); box-shadow:0 0 0 3px rgba(61,79,214,.14);}
+.selwrap .chev{position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--primary);}
+.statement{margin-top:18px; font-size:clamp(15px,2.6vw,17px); line-height:1.65; color:var(--ink);}
+.statement b{font-weight:700;}
+.statement .hl-red{color:var(--red); font-weight:700;}
+.statement .hl-blue{color:var(--primary); font-weight:700;}
+.statement .cite{display:block; margin-top:10px; font-size:12.5px; color:var(--muted); line-height:1.5;}
+.minibars{margin-top:18px; padding-top:16px; border-top:1px solid var(--line);}
+.mb{margin-bottom:12px;}
+.mb:last-child{margin-bottom:0;}
+.mb .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; font-size:13px;}
+.mb .top b{font-weight:600;} .mb .top .v{font-weight:700; font-size:15px;}
+.mb .track{height:20px; background:var(--soft); border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+.mb .fill{height:100%; border-radius:5px 0 0 5px;}
+.mb .fill.now{background:var(--primary);}
+.mb .fill.should{background:var(--red);}
+.gaptag{margin-top:8px; display:inline-block; font-size:12px; font-weight:600; color:var(--red);
+  background:var(--red-soft); border-radius:8px; padding:5px 10px;}
+
+/* ===== KPIs ===== */
+.kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px;}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(4,1fr);}}
+.kpi{padding:16px 16px 15px;}
+.kpi .k{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--label);}
+.kpi .v{font-size:clamp(22px,4.5vw,29px); font-weight:700; margin-top:6px; line-height:1; letter-spacing:-.01em;}
+.kpi .f{font-size:11.5px; color:var(--muted); margin-top:6px;}
+
+/* banner */
+.banner{display:flex; align-items:center; gap:16px; padding:16px 20px; margin-bottom:16px;
+  background:var(--red-soft); border:1px solid #f6d5d5; border-radius:var(--radius); flex-wrap:wrap;}
+.banner .ic{flex:none; width:44px; height:44px; border-radius:12px; background:var(--red); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700;}
+.banner .txt{flex:1; min-width:160px;}
+.banner .txt .k{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:#b5545a;}
+.banner .txt .v{font-size:clamp(24px,5vw,32px); font-weight:800; color:var(--red); line-height:1; margin-top:2px;}
+.banner .pill{font-size:12.5px; font-weight:600; color:#a33; background:#fff; border:1px solid #f2c9c9;
+  border-radius:20px; padding:8px 14px;}
+
+/* chart */
+.chart-card{padding:18px 20px 16px; margin-bottom:16px;}
+.chart-card h2{font-size:16px; font-weight:700; margin:0 0 2px;}
+.chart-card .sub{font-size:12.5px; color:var(--muted); margin:0 0 10px;}
+.chartbox{width:100%; overflow:hidden;}
+.chartbox svg{width:100%; height:auto; display:block;}
+.leg{display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; font-size:12px; color:var(--muted);}
+.leg i{display:inline-block; width:20px; height:0; border-top-width:3px; border-top-style:solid; vertical-align:middle; margin-right:6px;}
+
+/* table */
+.tbl-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:6px 2px 12px; flex-wrap:wrap;}
+.tbl-head h2{font-size:17px; font-weight:700; margin:0;}
+.tbl-head .note{font-size:12px; color:var(--muted);}
+.controls{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+.search{flex:1; min-width:180px; display:flex; align-items:center; gap:9px; background:var(--card);
+  border:1.5px solid var(--line-2); border-radius:12px; padding:11px 14px;}
+.search input{border:none; outline:none; font-family:inherit; font-size:14px; width:100%; background:transparent; color:var(--ink);}
+.search svg{flex:none; color:var(--muted);}
+.gsel{position:relative; min-width:150px;}
+.gsel select{appearance:none;-webkit-appearance:none; width:100%; font-family:inherit; font-size:14px; font-weight:500;
+  color:var(--ink); background:var(--card); border:1.5px solid var(--line-2); border-radius:12px; padding:11px 38px 11px 14px; cursor:pointer; outline:none;}
+.gsel .chev{position:absolute; right:14px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted);}
+.tablewrap{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+.tscroll{overflow-x:auto;}
+table{border-collapse:collapse; width:100%; min-width:660px; font-size:13px;}
+thead th{background:var(--primary); color:#fff; text-align:right; font-weight:600; font-size:11px; letter-spacing:.03em;
+  text-transform:uppercase; padding:13px 12px; white-space:nowrap; cursor:pointer; user-select:none;}
+thead th.l{text-align:left;}
+thead th:first-child{border-top-left-radius:var(--radius);}
+thead th:last-child{border-top-right-radius:var(--radius);}
+thead th .ar{opacity:.55; font-size:9px; margin-left:2px;}
+tbody td{text-align:right; padding:11px 12px; border-bottom:1px solid var(--line); white-space:nowrap;}
+tbody td.l{text-align:left;}
+tbody tr{cursor:pointer;}
+tbody tr:hover{background:var(--soft);}
+tbody tr.sel{background:#eef0fc;}
+tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--primary);}
+.cargo{font-weight:600; color:var(--ink);}
+.gtag{display:inline-block; font-size:10px; font-weight:600; padding:1px 7px; border-radius:5px; margin-left:8px;
+  background:var(--soft); color:var(--muted); border:1px solid var(--line);}
+.mut{color:var(--label);}
+.pos{color:var(--ok); font-weight:600;} .neg{color:var(--red); font-weight:600;}
+.b{font-weight:600;}
+
+/* method */
+.method{margin-top:20px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px;}
+.method h3{font-size:15px; font-weight:700; margin:0 0 10px;}
+.method ul{margin:0; padding-left:18px; color:var(--muted); font-size:12.5px;}
+.method li{margin-bottom:7px;} .method li b{color:var(--ink); font-weight:600;}
+.foot{margin-top:16px; font-size:11.5px; color:var(--label); line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <span class="badge">Transparência · Embu das Artes</span>
+    <h1>Cargos e salários contra a inflação</h1>
+    <p>Escolha um cargo e veja quanto o reajuste desde 2019 ficou atrás do IPCA — e qual seria o valor
+      necessário para repor o poder de compra.</p>
+  </header>
+
+  <!-- HERO: seletor + frase -->
+  <section class="card hero">
+    <div class="lbl">Escolha o cargo</div>
+    <div class="selwrap">
+      <select id="cargo" aria-label="Escolha o cargo"></select>
+      <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="statement" id="statement"></div>
+    <div class="minibars" id="minibars"></div>
+  </section>
+
+  <!-- KPIs -->
+  <section class="kpis" id="kpis"></section>
+
+  <!-- banner -->
+  <section class="banner" id="banner"></section>
+
+  <!-- chart -->
+  <section class="card chart-card">
+    <h2>Poder de compra do salário típico</h2>
+    <p class="sub">Índice base 2019 = 100 · coorte de <span id="coh" class="num"></span> cargos presentes em todos os anos</p>
+    <div class="chartbox" id="chart"></div>
+    <div class="leg">
+      <span><i style="border-color:var(--muted); border-top-style:dashed"></i>Salário nominal</span>
+      <span><i style="border-color:var(--primary)"></i>Poder de compra real</span>
+      <span><i style="border-color:var(--red); border-top-style:dashed"></i>Paridade com 2019 (100)</span>
+    </div>
+  </section>
+
+  <!-- tabela -->
+  <div class="tbl-head">
+    <h2>Todos os cargos</h2>
+    <span class="note">toque em um cargo para vê-lo acima · toque nos títulos para ordenar</span>
+  </div>
+  <div class="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Buscar cargo…" autocomplete="off">
+    </label>
+    <div class="gsel">
+      <select id="grp" aria-label="Filtrar por grupo"></select>
+      <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+  </div>
+  <div class="tablewrap"><div class="tscroll"><table id="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></div>
+
+  <div class="method">
+    <h3>Como os números são calculados</h3>
+    <ul>
+      <li><b>Período.</b> Compara-se o valor-base de 2019 (vigente a partir de jan/2020) ao de 2025, corrigido pelo IPCA acumulado do intervalo somado à inflação já corrida em 2026 — pois o salário de 2025 segue vigente sem novo reajuste.</li>
+      <li><b>Perda real.</b> (1 + reajuste) ÷ (1 + IPCA) − 1. Negativo = o salário compra menos hoje do que em 2019.</li>
+      <li><b>"Deveria ser".</b> Valor-base de 2019 corrigido pela inflação do período — o piso para repor o poder de compra, na linha da revisão geral anual do art. 37, X, da Constituição Federal.</li>
+      <li><b>Cargos criados depois</b> entram pela primeira aparição (ex.: Agente Comunitário de Saúde desde 2023). O Médico Plantonista é remunerado por hora, sinalizado com "/h".</li>
+    </ul>
+    <p class="foot" id="foot"></p>
+  </div>
+</div>
+
+<script>
+const P = {"cargos": [{"cargo": "Agente Comunitário de Saúde", "grupo": "Saúde", "porHora": false, "base": 2023, "sbase": 2640.0, "s2025": 3242.0, "s2019": null, "nom": 22.8, "ipca": 13.1, "real": 8.6, "ideal": 2984.67, "deficit": -257.33, "deficitPct": -7.9}, {"cargo": "Agente Cultural", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1533.69, "s2025": 2055.29, "s2019": 1533.69, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2207.59, "deficit": 152.3, "deficitPct": 7.4}, {"cargo": "Agente Gráfico", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Agente Municipal", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1355.49, "s2025": 1816.52, "s2019": 1355.49, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 1951.09, "deficit": 134.57, "deficitPct": 7.4}, {"cargo": "Agente Social", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Agente de Combate a Endemias", "grupo": "Operacional e apoio", "porHora": false, "base": 2023, "sbase": 2640.0, "s2025": 3242.0, "s2019": null, "nom": 22.8, "ipca": 13.1, "real": 8.6, "ideal": 2984.67, "deficit": -257.33, "deficitPct": -7.9}, {"cargo": "Agente de Defesa do Consumidor", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Agente de Saúde Ambiental", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1329.08, "s2025": 1816.52, "s2019": 1329.08, "nom": 36.7, "ipca": 43.9, "real": -5.0, "ideal": 1913.07, "deficit": 96.55, "deficitPct": 5.3}, {"cargo": "Agente de Transporte e Transito", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 2921.66, "s2025": 3915.44, "s2019": 2921.66, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4205.42, "deficit": 289.98, "deficitPct": 7.4}, {"cargo": "Almoxarife", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1533.69, "s2025": 2055.29, "s2019": 1533.69, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2207.59, "deficit": 152.3, "deficitPct": 7.4}, {"cargo": "Analista Econômico Financeiro", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista Jurídico", "grupo": "Técnico e analista", "porHora": false, "base": 2023, "sbase": 5656.04, "s2025": 6574.76, "s2019": null, "nom": 16.2, "ipca": 13.1, "real": 2.8, "ideal": 6394.47, "deficit": -180.29, "deficitPct": -2.7}, {"cargo": "Analista de Comunicação", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista de Gestão Documental", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista de Meio Ambiente", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista de Planejamento e Gestão", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista de Turismo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Analista em Geoprocessamento", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Apoiador Institucional", "grupo": "Técnico e analista", "porHora": false, "base": 2021, "sbase": 2800.0, "s2025": 3319.9, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 3503.56, "deficit": 183.66, "deficitPct": 5.5}, {"cargo": "Arquiteto", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 7271.66, "s2025": 9745.0, "s2019": 7271.66, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 10466.79, "deficit": 721.79, "deficitPct": 7.4}, {"cargo": "Assessor Especial", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 9427.82, "s2025": 10078.28, "s2019": 9427.82, "nom": 6.9, "ipca": 43.9, "real": -25.7, "ideal": 13570.36, "deficit": 3492.08, "deficitPct": 34.6}, {"cargo": "Assessor Técnico Administrativo", "grupo": "Direção e assessoria", "porHora": false, "base": 2022, "sbase": 2784.76, "s2025": 3376.13, "s2019": null, "nom": 21.2, "ipca": 18.3, "real": 2.5, "ideal": 3293.78, "deficit": -82.35, "deficitPct": -2.4}, {"cargo": "Assessor de Políticas Públicas", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 6878.45, "s2025": 4150.51, "s2019": 6878.45, "nom": -39.7, "ipca": 43.9, "real": -58.1, "ideal": 9900.81, "deficit": 5750.3, "deficitPct": 138.5}, {"cargo": "Assessor de Saúde", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 7000.0, "s2025": 8299.76, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 8758.89, "deficit": 459.13, "deficitPct": 5.5}, {"cargo": "Assistente Social", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Assistente Técnico Administrativo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Assistente de Desenvolvimento", "grupo": "Operacional e apoio", "porHora": false, "base": 2020, "sbase": 1369.04, "s2025": 1816.52, "s2019": null, "nom": 32.7, "ipca": 37.7, "real": -3.7, "ideal": 1885.37, "deficit": 68.85, "deficitPct": 3.8}, {"cargo": "Atendente de Enfermagem", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1533.69, "s2025": 2055.29, "s2019": 1533.69, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2207.59, "deficit": 152.3, "deficitPct": 7.4}, {"cargo": "Auxiliar Educacional", "grupo": "Educação", "porHora": false, "base": 2023, "sbase": 1562.69, "s2025": 1816.52, "s2019": null, "nom": 16.2, "ipca": 13.1, "real": 2.8, "ideal": 1766.71, "deficit": -49.81, "deficitPct": -2.7}, {"cargo": "Auxiliar de Desenvolvimento Infantil", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 1355.49, "s2025": 1816.52, "s2019": 1355.49, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 1951.09, "deficit": 134.57, "deficitPct": 7.4}, {"cargo": "Auxiliar de Enfermagem", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1533.69, "s2025": 2055.29, "s2019": 1533.69, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2207.59, "deficit": 152.3, "deficitPct": 7.4}, {"cargo": "Auxiliar de Saúde", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1700.39, "s2025": 2055.29, "s2019": 1700.39, "nom": 20.9, "ipca": 43.9, "real": -16.0, "ideal": 2447.53, "deficit": 392.24, "deficitPct": 19.1}, {"cargo": "Auxiliar de Saúde Bucal", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1759.86, "s2025": 2055.29, "s2019": 1759.86, "nom": 16.8, "ipca": 43.9, "real": -18.9, "ideal": 2533.13, "deficit": 477.84, "deficitPct": 23.2}, {"cargo": "Bibliotecário", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Chefe de Gabinete de Secretaria", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 6500.0, "s2025": 7706.92, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 8133.26, "deficit": 426.34, "deficitPct": 5.5}, {"cargo": "Chefe de Gabinete do Prefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2020, "sbase": 17697.15, "s2025": 20775.4, "s2019": null, "nom": 17.4, "ipca": 37.7, "real": -14.8, "ideal": 24371.6, "deficit": 3596.2, "deficitPct": 17.3}, {"cargo": "Chefe do Gabinete do Subprefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 9500.0, "s2025": 11263.95, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 11887.07, "deficit": 623.12, "deficitPct": 5.5}, {"cargo": "Chefe do Gabinete do Vice-Prefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 9500.0, "s2025": 11263.95, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 11887.07, "deficit": 623.12, "deficitPct": 5.5}, {"cargo": "Cirurgião Dentista 20h", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Cirurgião Dentista 40h", "grupo": "Saúde", "porHora": false, "base": 2022, "sbase": 10846.24, "s2025": 13149.51, "s2019": null, "nom": 21.2, "ipca": 18.3, "real": 2.5, "ideal": 12828.79, "deficit": -320.72, "deficitPct": -2.4}, {"cargo": "Comprador", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Condutor de Ambulância", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1789.21, "s2025": 2396.94, "s2019": 1789.21, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2575.38, "deficit": 178.44, "deficitPct": 7.4}, {"cargo": "Conselheiro Tutelar", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 5635.69, "s2025": 5984.04, "s2019": 5635.69, "nom": 6.2, "ipca": 43.9, "real": -26.2, "ideal": 8111.99, "deficit": 2127.95, "deficitPct": 35.6}, {"cargo": "Contador", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Coordenador de Divisão", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 5200.0, "s2025": 6165.53, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 6506.61, "deficit": 341.08, "deficitPct": 5.5}, {"cargo": "Diretor de Departamento - Complexidade I", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 9000.0, "s2025": 10671.12, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 11261.43, "deficit": 590.31, "deficitPct": 5.5}, {"cargo": "Diretor de Departamento - Complexidade II", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 8000.0, "s2025": 9485.44, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 10010.16, "deficit": 524.72, "deficitPct": 5.5}, {"cargo": "Diretor de Departamento - Complexidade III", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 7000.0, "s2025": 8299.76, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 8758.89, "deficit": 459.13, "deficitPct": 5.5}, {"cargo": "Diretor de Escola II", "grupo": "Educação", "porHora": false, "base": 2022, "sbase": 5561.86, "s2025": 6742.95, "s2019": null, "nom": 21.2, "ipca": 18.3, "real": 2.5, "ideal": 6578.5, "deficit": -164.45, "deficitPct": -2.4}, {"cargo": "Educador Docente Infantil", "grupo": "Educação", "porHora": false, "base": 2022, "sbase": 3436.92, "s2025": 4166.79, "s2019": null, "nom": 21.2, "ipca": 18.3, "real": 2.5, "ideal": 4065.14, "deficit": -101.65, "deficitPct": -2.4}, {"cargo": "Eletricista", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1753.57, "s2025": 2350.02, "s2019": 1753.57, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2524.08, "deficit": 174.06, "deficitPct": 7.4}, {"cargo": "Encarregado de Plantão", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1759.86, "s2025": 2358.44, "s2019": 1759.86, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2533.13, "deficit": 174.69, "deficitPct": 7.4}, {"cargo": "Enfermeiro", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Enfermeiro do PSF", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 6300.82, "s2025": 8443.95, "s2019": 6300.82, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 9069.37, "deficit": 625.42, "deficitPct": 7.4}, {"cargo": "Engenheiro", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 7271.67, "s2025": 9745.0, "s2019": 7271.67, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 10466.81, "deficit": 721.81, "deficitPct": 7.4}, {"cargo": "Farmacêutico", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Fiscal Municipal", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 2921.66, "s2025": 3915.44, "s2019": 2921.66, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4205.42, "deficit": 289.98, "deficitPct": 7.4}, {"cargo": "Fisioterapeuta", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Fonoaudiólogo", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Fotógrafo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Geografo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Geólogo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Guarda Civil Municipal", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 2939.73, "s2025": 3939.63, "s2019": 2939.73, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4231.43, "deficit": 291.8, "deficitPct": 7.4}, {"cargo": "Mecânico", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Medico Plantonista", "grupo": "Saúde", "porHora": true, "base": 2019, "sbase": 93.43, "s2025": 125.2, "s2019": 93.43, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 134.48, "deficit": 9.28, "deficitPct": 7.4}, {"cargo": "Medico Veterinário", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 7271.67, "s2025": 9745.0, "s2019": 7271.67, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 10466.81, "deficit": 721.81, "deficitPct": 7.4}, {"cargo": "Medico do PSF", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 17302.11, "s2025": 23187.15, "s2019": 17302.11, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 24904.57, "deficit": 1717.42, "deficitPct": 7.4}, {"cargo": "Monitor de Alunos", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 1355.49, "s2025": 1816.52, "s2019": 1355.49, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 1951.09, "deficit": 134.57, "deficitPct": 7.4}, {"cargo": "Motorista", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Museólogo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Nutricionista", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Oficial de Manutenção", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1503.62, "s2025": 2015.05, "s2019": 1503.62, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2164.3, "deficit": 149.25, "deficitPct": 7.4}, {"cargo": "Operador de Maquinas", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 2519.24, "s2025": 3376.13, "s2019": 2519.24, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 3626.18, "deficit": 250.05, "deficitPct": 7.4}, {"cargo": "Prefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 18283.77, "s2025": 21678.69, "s2019": 18283.77, "nom": 18.6, "ipca": 43.9, "real": -17.6, "ideal": 26317.57, "deficit": 4638.88, "deficitPct": 21.4}, {"cargo": "Presidente Embuprev", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 17521.93, "s2025": 20775.4, "s2019": 17521.93, "nom": 18.6, "ipca": 43.9, "real": -17.6, "ideal": 25220.98, "deficit": 4445.58, "deficitPct": 21.4}, {"cargo": "Procurador", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 7271.67, "s2025": 9745.0, "s2019": 7271.67, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 10466.81, "deficit": 721.81, "deficitPct": 7.4}, {"cargo": "Professor Adjunto", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 989.05, "s2025": 1388.92, "s2019": 989.05, "nom": 40.4, "ipca": 43.9, "real": -2.4, "ideal": 1423.63, "deficit": 34.71, "deficitPct": 2.5}, {"cargo": "Professor Educação Básica I", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 3109.23, "s2025": 4166.79, "s2019": 3109.23, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4475.41, "deficit": 308.62, "deficitPct": 7.4}, {"cargo": "Professor Educação Básica II", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 3109.23, "s2025": 4166.79, "s2019": 3109.23, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4475.41, "deficit": 308.62, "deficitPct": 7.4}, {"cargo": "Professor de Desenvolvimento Infantil", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 3109.23, "s2025": 4166.79, "s2019": 3109.23, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 4475.41, "deficit": 308.62, "deficitPct": 7.4}, {"cargo": "Psicopedagogo", "grupo": "Saúde", "porHora": false, "base": 2023, "sbase": 5656.04, "s2025": 6574.76, "s2019": null, "nom": 16.2, "ipca": 13.1, "real": 2.8, "ideal": 6394.47, "deficit": -180.29, "deficitPct": -2.7}, {"cargo": "Psicólogo", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Secretario de Escola", "grupo": "Educação", "porHora": false, "base": 2019, "sbase": 1700.39, "s2025": 2055.29, "s2019": 1700.39, "nom": 20.9, "ipca": 43.9, "real": -16.0, "ideal": 2447.53, "deficit": 392.24, "deficitPct": 19.1}, {"cargo": "Secretário Adjunto", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 9427.82, "s2025": 10671.12, "s2019": 9427.82, "nom": 13.2, "ipca": 43.9, "real": -21.4, "ideal": 13570.36, "deficit": 2899.24, "deficitPct": 27.2}, {"cargo": "Secretário Municipal", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 17521.93, "s2025": 20775.4, "s2019": 17521.93, "nom": 18.6, "ipca": 43.9, "real": -17.6, "ideal": 25220.98, "deficit": 4445.58, "deficitPct": 21.4}, {"cargo": "Sepultador", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1556.25, "s2025": 2015.05, "s2019": 1556.25, "nom": 29.5, "ipca": 43.9, "real": -10.0, "ideal": 2240.06, "deficit": 225.01, "deficitPct": 11.2}, {"cargo": "Subprefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2021, "sbase": 17521.93, "s2025": 20775.4, "s2019": null, "nom": 18.6, "ipca": 25.1, "real": -5.2, "ideal": 21924.67, "deficit": 1149.27, "deficitPct": 5.5}, {"cargo": "Telefonista", "grupo": "Operacional e apoio", "porHora": false, "base": 2019, "sbase": 1303.03, "s2025": 1530.45, "s2019": 1303.03, "nom": 17.5, "ipca": 43.9, "real": -18.4, "ideal": 1875.58, "deficit": 345.13, "deficitPct": 22.6}, {"cargo": "Terapeuta Ocupacional", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Topógrafo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Técnico Desportivo", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 4906.05, "s2025": 6574.76, "s2019": 4906.05, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 7061.74, "deficit": 486.98, "deficitPct": 7.4}, {"cargo": "Técnico Imobilização Ortopédica", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Técnico de Edificações", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.65, "s2025": 2396.94, "s2019": 1788.65, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.57, "deficit": 177.63, "deficitPct": 7.4}, {"cargo": "Técnico de Enfermagem", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Técnico de Enfermagem do PSF", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 2519.28, "s2025": 3376.13, "s2019": 2519.28, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 3626.24, "deficit": 250.11, "deficitPct": 7.4}, {"cargo": "Técnico de Segurança do Trabalho", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Técnico em Saúde Bucal", "grupo": "Saúde", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Técnico em Tecnologia da Informação", "grupo": "Técnico e analista", "porHora": false, "base": 2019, "sbase": 1788.6, "s2025": 2396.94, "s2019": 1788.6, "nom": 34.0, "ipca": 43.9, "real": -6.9, "ideal": 2574.5, "deficit": 177.56, "deficitPct": 7.4}, {"cargo": "Vice-Prefeito", "grupo": "Direção e assessoria", "porHora": false, "base": 2019, "sbase": 17521.93, "s2025": 20775.4, "s2019": 17521.93, "nom": 18.6, "ipca": 43.9, "real": -17.6, "ideal": 25220.98, "deficit": 4445.58, "deficitPct": 21.4}], "index": [{"label": "2019", "nom": 100.0, "real": 100.0}, {"label": "2020", "nom": 101.0, "real": 96.6}, {"label": "2021", "nom": 101.0, "real": 87.8}, {"label": "2022", "nom": 110.5, "real": 90.8}, {"label": "2023", "nom": 114.8, "real": 90.2}, {"label": "2024", "nom": 127.0, "real": 95.1}, {"label": "2025", "nom": 133.5, "real": 95.9}, {"label": "jul/26", "nom": 133.5, "real": 92.7}], "meta": {"periodoIpca": 43.94, "medNom": 34.01, "medReal": -6.9, "abaixo": 77, "n": 77, "totalCargos": 103, "cohortN": 77}};
+const CARGOS = P.cargos, META = P.meta, INDEX = P.index;
+const GRUPOS = ["Todos","Direção e assessoria","Saúde","Educação","Técnico e analista","Operacional e apoio"];
+let curGroup="Todos", query="", sortKey="real", sortDir=1, selCargo=null;
+
+const nf = (v,d=2)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money = (v,h=false)=> 'R$ '+nf(v)+(h?'/h':'');
+const pctSign = v => (v>=0?'+':'−')+Math.abs(v).toFixed(1).replace('.',',')+'%';
+const pctAbs = v => Math.abs(v).toFixed(1).replace('.',',')+'%';
+
+/* ---------- select ---------- */
+function fillSelect(){
+  const s=document.getElementById("cargo");
+  s.innerHTML=CARGOS.map((c,i)=>`<option value="${i}">${c.cargo}</option>`).join("");
+  const ti=CARGOS.findIndex(c=>c.cargo==="Telefonista");
+  s.value = ti>=0?ti:0; selCargo = +s.value;
+  s.onchange=()=>{ selCargo=+s.value; drawStatement(); drawTable(); };
+  const g=document.getElementById("grp");
+  g.innerHTML=GRUPOS.map(x=>`<option value="${x}">${x}</option>`).join("");
+  g.onchange=()=>{curGroup=g.value; drawTable();};
+}
+
+/* ---------- frase ---------- */
+function drawStatement(){
+  const c=CARGOS[selCargo], h=c.porHora;
+  const lost = c.real < -0.05, gained = c.real > 0.05;
+  const clsGap = lost ? 'hl-red' : (gained?'hl-blue':'');
+  const relacao = lost
+      ? `<span class="hl-red">${pctAbs(c.real)} abaixo da inflação</span>`
+      : gained ? `<span class="hl-blue">${pctAbs(c.real)} acima da inflação</span>`
+      : `praticamente empatado com a inflação`;
+  let txt = `Desde ${c.base}, o cargo de <b>${c.cargo}</b>, que tinha valor-base de `+
+    `<b>${money(c.sbase,h)}</b>, recebeu reajuste de <span class="hl-blue">${pctSign(c.nom)}</span> e passou a `+
+    `<b>${money(c.s2025,h)}</b> — o que representa ${relacao}, já que o IPCA do período acumulou `+
+    `<b>${pctAbs(c.ipca)}</b>. `;
+  if(lost){
+    txt += `Para repor o poder de compra, o valor-base hoje deveria ser <span class="hl-red">${money(c.ideal,h)}</span>`+
+      ` (diferença de <b>${money(c.deficit,h)}</b>, ${pctAbs(c.deficitPct)} a mais).`;
+  } else {
+    txt += `O cargo superou a reposição pela inflação, que seria de <b>${money(c.ideal,h)}</b>.`;
+  }
+  txt += `<span class="cite">Reposição estimada segundo a revisão geral anual prevista no art. 37, X, da Constituição Federal`+
+    `${h?' · valores por hora':''}.</span>`;
+  document.getElementById("statement").innerHTML = txt;
+
+  // minibars
+  const mx=Math.max(c.s2025, c.ideal)*1.02;
+  const wN=Math.max(3,c.s2025/mx*100), wS=Math.max(3,c.ideal/mx*100);
+  document.getElementById("minibars").innerHTML =
+    `<div class="mb"><div class="top"><b>Salário-base atual (2025)</b><span class="v blue">${money(c.s2025,h)}</span></div>
+       <div class="track"><div class="fill now" style="width:${wN}%"></div></div></div>
+     <div class="mb"><div class="top"><b>Deveria ser (reposição da inflação)</b><span class="v red">${money(c.ideal,h)}</span></div>
+       <div class="track"><div class="fill should" style="width:${wS}%"></div></div></div>`+
+    (lost?`<span class="gaptag">Defasagem de ${money(c.deficit,h)} — o equivalente a ${pctAbs(c.deficitPct)} do salário atual</span>`:``);
+}
+
+/* ---------- KPIs + banner ---------- */
+function drawKpis(){
+  const k=[
+    ["Período analisado","2019–2025","blue","7 tabelas anuais"],
+    ["Inflação acumulada",pctSign(META.periodoIpca),"red","IPCA · jan/2020–jul/2026"],
+    ["Reajuste mediano",pctSign(META.medNom),"blue","salário nominal"],
+    ["Cargos",""+META.totalCargos,"","analisados"],
+  ];
+  document.getElementById("kpis").innerHTML = k.map((x,i)=>
+    `<div class="card ${i===1?'red-top':''} kpi"><div class="k">${x[0]}</div>`+
+    `<div class="v ${x[2]}">${x[1]}</div><div class="f">${x[3]}</div></div>`).join("");
+  document.getElementById("banner").innerHTML =
+    `<div class="ic">$</div><div class="txt"><div class="k">Perda real mediana de poder de compra</div>`+
+    `<div class="v">${pctSign(META.medReal)}</div></div>`+
+    `<div class="pill">${META.abaixo} de ${META.n} cargos abaixo da inflação</div>`;
+}
+
+/* ---------- chart ---------- */
+function drawChart(){
+  const D=INDEX, W=760, H=280, mL=40, mR=14, mT=16, mB=32;
+  const iw=W-mL-mR, ih=H-mT-mB, lo=82, hi=136;
+  const X=i=> mL+iw*i/(D.length-1), Y=v=> mT+ih*(1-(v-lo)/(hi-lo));
+  let g="";
+  [90,100,110,120,130].forEach(v=>{ const y=Y(v), b=v===100;
+    g+=`<line x1="${mL}" y1="${y}" x2="${W-mR}" y2="${y}" stroke="${b?'var(--red)':'var(--line-2)'}" stroke-width="${b?1.3:1}" ${b?'stroke-dasharray="6 4"':''}/>`;
+    g+=`<text x="${mL-7}" y="${y+3.5}" text-anchor="end" font-size="10.5" fill="${b?'var(--red)':'var(--label)'}" font-family="Poppins">${v}</text>`;});
+  D.forEach((d,i)=> g+=`<text x="${X(i)}" y="${H-11}" text-anchor="middle" font-size="10.5" fill="var(--muted)" font-family="Poppins">${d.label}</text>`);
+  const path=(key,color,w,dash)=>{ let p=D.map((d,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(d[key]).toFixed(1)).join(" ");
+    return `<path d="${p}" fill="none" stroke="${color}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:''} stroke-linejoin="round" stroke-linecap="round"/>`;};
+  g+=path("nom","#aab2c4",2,"5 4");
+  g+=path("real","var(--primary)",3);
+  D.forEach((d,i)=> g+=`<circle cx="${X(i)}" cy="${Y(d.real)}" r="3.4" fill="#fff" stroke="var(--primary)" stroke-width="2"/>`);
+  const last=D[D.length-1];
+  g+=`<text x="${X(D.length-1)}" y="${Y(last.real)-10}" text-anchor="end" font-size="12" font-weight="700" fill="var(--primary)" font-family="Poppins">${nf(last.real,1)}</text>`;
+  g+=`<text x="${X(D.length-1)}" y="${Y(last.nom)-8}" text-anchor="end" font-size="11" font-weight="600" fill="#8b93a6" font-family="Poppins">${nf(last.nom,1)}</text>`;
+  document.getElementById("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Índice de poder de compra base 2019">${g}</svg>`;
+}
+
+/* ---------- tabela ---------- */
+function drawHead(){
+  const cols=[["l","cargo","Cargo"],["","sbase","Valor-base"],["","s2025","Atual 2025"],
+    ["","nom","Reajuste"],["","real","Perda real"],["","ideal","Deveria ser"]];
+  document.getElementById("thead").innerHTML="<tr>"+cols.map(c=>
+    `<th class="${c[0]}" data-s="${c[1]}">${c[2]}${sortKey===c[1]?' <span class="ar">'+(sortDir<0?'▼':'▲')+'</span>':''}</th>`).join("")+"</tr>";
+  document.querySelectorAll("th").forEach(th=>th.onclick=()=>{
+    const k=th.dataset.s; if(sortKey===k) sortDir*=-1; else{sortKey=k; sortDir=(k==="cargo"?1:-1);} drawTable();});
+}
+function drawTable(){
+  drawHead();
+  let list=CARGOS.map((c,i)=>({c,i}));
+  if(curGroup!=="Todos") list=list.filter(x=>x.c.grupo===curGroup);
+  if(query){const q=query.toLowerCase(); list=list.filter(x=>x.c.cargo.toLowerCase().includes(q));}
+  list.sort((a,b)=>{
+    let av,bv; if(sortKey==="cargo"){av=a.c.cargo;bv=b.c.cargo; return av<bv?-sortDir:av>bv?sortDir:0;}
+    av=a.c[sortKey]; bv=b.c[sortKey]; return (av-bv)*sortDir;});
+  document.getElementById("tbody").innerHTML=list.map(({c,i})=>{
+    const h=c.porHora;
+    return `<tr data-i="${i}" class="${i===selCargo?'sel':''}">
+      <td class="l"><span class="cargo">${c.cargo}</span><span class="gtag">${c.grupo.split(' ')[0]}</span></td>
+      <td class="num">${money(c.sbase,h)}</td>
+      <td class="num b">${money(c.s2025,h)}</td>
+      <td class="num blue b">${pctSign(c.nom)}</td>
+      <td class="num ${c.real<-0.05?'neg':(c.real>0.05?'pos':'')}">${pctSign(c.real)}</td>
+      <td class="num red b">${money(c.ideal,h)}</td></tr>`;}).join("");
+  document.querySelectorAll("#tbody tr").forEach(tr=>tr.onclick=()=>{
+    selCargo=+tr.dataset.i; document.getElementById("cargo").value=selCargo;
+    drawStatement(); drawTable();
+    document.querySelector(".hero").scrollIntoView({behavior:"smooth",block:"start"});});
+}
+
+document.getElementById("q").addEventListener("input",e=>{query=e.target.value; drawTable();});
+document.getElementById("coh").textContent=META.cohortN;
+document.getElementById("foot").innerHTML=`IPCA/IBGE — 2020 +4,52% · 2021 +10,06% · 2022 +5,79% · 2023 +4,62% · 2024 +4,83% · 2025 +4,26% · 2026 até jul +3,44%. `+
+  `Fonte dos salários: Diário Oficial do Estado de SP (Cargos e Salários, jan/2020–jan/2026). Painel analítico independente; agosto/2026 do IPCA ainda não divulgado.`;
+
+fillSelect(); drawKpis(); drawChart(); drawStatement(); drawTable();
+
+/* auto-altura para iframe (Wix) */
+function postH(){ try{ parent.postMessage({type:"embed-size",height:document.body.scrollHeight},"*"); }catch(e){} }
+window.addEventListener("load",postH); window.addEventListener("resize",postH);
+new ResizeObserver(postH).observe(document.body);
+</script>
+</body>
+</html>
