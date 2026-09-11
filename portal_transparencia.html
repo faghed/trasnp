@@ -166,7 +166,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--b
   <div class="hdr-inner">
     <div class="hdr-tag">Portal de Transparência</div>
     <h1>Remuneração dos Servidores</h1>
-    <p>Consulta pública — Janeiro a Maio 2026 · Valores em Reais (R$)</p>
+    <p>Consulta pública — Janeiro a Julho 2026 · Valores em Reais (R$)</p>
   </div>
   <div class="hdr-bar"></div>
 </div>
@@ -208,6 +208,8 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--b
     <button id="bFev" onclick="switchMonth('fev')">Fev</button>
     <button id="bAbr" onclick="switchMonth('abr')">Abr</button>
     <button id="bMai" onclick="switchMonth('mai')">Mai</button>
+    <button id="bJun" onclick="switchMonth('jun')">Jun</button>
+    <button id="bJul" onclick="switchMonth('jul')">Jul</button>
   </div>
 
   <div class="tabs">
@@ -291,7 +293,7 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--b
 
 <script>
 const BASE_URL='./';
-const FILES={jan:BASE_URL+'dados_janeiro.json',fev:BASE_URL+'dados_fevereiro.json',abr:BASE_URL+'dados_abril.json',mai:BASE_URL+'dados_maio.json'};
+const FILES={jan:BASE_URL+'dados_janeiro.json',fev:BASE_URL+'dados_fevereiro.json',abr:BASE_URL+'dados_abril.json',mai:BASE_URL+'dados_maio.json',jun:BASE_URL+'dados_junho.json',jul:BASE_URL+'dados_julho.json'};
 const cache={};
 const $=id=>document.getElementById(id);
 const brl=v=>v?v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
@@ -320,7 +322,7 @@ function toggleInd(){$('indCard').classList.toggle('open')}
 
 async function switchMonth(m){
   mo=m;
-  ['jan','fev','abr','mai'].forEach(k=>{const b=$('b'+k.charAt(0).toUpperCase()+k.slice(1));if(b)b.classList.toggle('on',k===m)});
+  ['jan','fev','abr','mai','jun','jul'].forEach(k=>{const b=$('b'+k.charAt(0).toUpperCase()+k.slice(1));if(b)b.classList.toggle('on',k===m)});
   try{apply(await loadM(m));updSt();fil=[...D];pg=1;sC=-1;doFilter();renderCargos();if(window._ci){window._ci=false;killCh()}const at=document.querySelector('.tabs button.on');if(at&&at.dataset.t==='grf')initCh()}catch(e){alert('Erro: '+e.message)}
 }
 
