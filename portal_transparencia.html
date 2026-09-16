@@ -76,6 +76,13 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--b
 .fbadge{display:inline-flex;align-items:center;gap:5px;background:rgba(43,74,207,.07);border:1px solid rgba(43,74,207,.18);color:var(--pri);font-size:11px;font-weight:700;padding:5px 10px;border-radius:16px}
 .fbadge .x{cursor:pointer;opacity:.5;font-size:14px;line-height:1}.fbadge .x:hover{opacity:1}
 .fcount{font-size:12px;color:var(--dim);font-weight:600;margin-bottom:6px}
+.anon-toggle{display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer;user-select:none}
+.anon-switch{width:44px;height:24px;background:var(--brd);border-radius:12px;position:relative;transition:background .2s;flex-shrink:0}
+.anon-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.anon-toggle.on .anon-switch{background:var(--pri)}
+.anon-toggle.on .anon-switch::after{transform:translateX(20px)}
+.anon-label{font-size:12px;font-weight:700;color:var(--dim)}
+.anon-toggle.on .anon-label{color:var(--pri)}
 .clist{display:flex;flex-direction:column;gap:8px}
 .citem{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px 16px;box-shadow:var(--sh);transition:border-color .15s}
 .citem:active{border-color:var(--pri)}
@@ -219,6 +226,10 @@ body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;background:var(--b
   </div>
 
   <div class="pnl on" id="p-srv">
+    <div class="anon-toggle" id="anonToggle" onclick="toggleAnon()">
+      <div class="anon-switch"></div>
+      <span class="anon-label">Ocultar nomes e matrículas</span>
+    </div>
     <div class="fbar">
       <div class="srch-w">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -299,8 +310,12 @@ const $=id=>document.getElementById(id);
 const brl=v=>v?v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
 const num=v=>v!=null?v.toLocaleString('pt-BR'):'0';
 
-let mo='jan',D=[],FN=[],DI=[],ST={},fil=[],pg=1,sC=-1,sA=true;
+let mo='jan',D=[],FN=[],DI=[],ST={},fil=[],pg=1,sC=-1,sA=true,anon=false;
 const PP=40;
+
+function maskName(n){if(!anon||!n)return n;return n.split(' ').map(w=>w.length<=2?w:w[0]+w[1]+'*'.repeat(Math.min(w.length-2,6))).join(' ')}
+function maskMat(m){if(!anon||!m)return m;return m.slice(0,2)+'*'.repeat(m.length-2)}
+function toggleAnon(){anon=!anon;$('anonToggle').classList.toggle('on',anon);render();}
 
 async function loadM(m){if(cache[m])return cache[m];const r=await fetch(FILES[m]);if(!r.ok)throw new Error(r.status);cache[m]=await r.json();return cache[m]}
 function apply(p){D=p.data;FN=p.func;DI=p.dist;ST=p.stats}
@@ -336,7 +351,7 @@ function sTab(t){
 function render(){
   const s=(pg-1)*PP,page=fil.slice(s,s+PP);
   $('mCards').innerHTML=page.map(r=>`<div class="citem">
-    <div class="ci-top"><span class="ci-name">${r.N}</span><span class="ci-mat">${r.M}</span></div>
+    <div class="ci-top"><span class="ci-name">${maskName(r.N)}</span><span class="ci-mat">${maskMat(r.M)}</span></div>
     <div class="ci-func" onclick="fByCargo('${(r.F||'').replace(/'/g,"\\'")}')">${r.F||'—'}</div>
     <div class="ci-vals">
       <div class="ci-v"><div class="ci-v-lab">Bruto</div><div class="ci-v-num">${brl(r.RB)}</div></div>
@@ -344,7 +359,7 @@ function render(){
       <div class="ci-v"><div class="ci-v-lab">Inden.</div><div class="ci-v-num">${r.I?brl(r.I):'—'}</div></div>
     </div></div>`).join('');
   $('dTB').innerHTML=page.map(r=>`<tr>
-    <td>${r.M}</td><td style="font-weight:600">${r.N}</td>
+    <td>${maskMat(r.M)}</td><td style="font-weight:600">${maskName(r.N)}</td>
     <td class="fn" onclick="fByCargo('${(r.F||'').replace(/'/g,"\\'")}')">${r.F||'—'}</td>
     <td class="num">${brl(r.RB)}</td><td class="num">${brl(r.RL)}</td><td class="num">${brl(r.I)}</td>
   </tr>`).join('');
@@ -414,7 +429,7 @@ function openM(cargo){
   const sorted=[...sv].sort((a,b)=>(b.I||0)-(a.I||0));
   $('mB').innerHTML=`
     <div class="clist">${sorted.map(r=>`<div class="citem">
-      <div class="ci-top"><span class="ci-name">${r.N}</span><span class="ci-mat">${r.M}</span></div>
+      <div class="ci-top"><span class="ci-name">${maskName(r.N)}</span><span class="ci-mat">${maskMat(r.M)}</span></div>
       <div class="ci-vals">
         <div class="ci-v"><div class="ci-v-lab">Bruto</div><div class="ci-v-num">${brl(r.RB)}</div></div>
         <div class="ci-v"><div class="ci-v-lab">Líquido</div><div class="ci-v-num">${brl(r.RL)}</div></div>
@@ -423,7 +438,7 @@ function openM(cargo){
     <div class="dtable-w"><table class="dtable"><thead><tr>
       <th>Mat.</th><th>Nome</th><th class="num">Bruto</th><th class="num">Líquido</th><th class="num">Inden.</th>
     </tr></thead><tbody>${sorted.map(r=>`<tr>
-      <td>${r.M}</td><td style="font-weight:600">${r.N}</td><td class="num">${brl(r.RB)}</td><td class="num">${brl(r.RL)}</td><td class="num">${brl(r.I)}</td>
+      <td>${maskMat(r.M)}</td><td style="font-weight:600">${maskName(r.N)}</td><td class="num">${brl(r.RB)}</td><td class="num">${brl(r.RL)}</td><td class="num">${brl(r.I)}</td>
     </tr>`).join('')}</tbody></table></div>`;
   $('mO').classList.add('show');document.body.style.overflow='hidden';
 }
