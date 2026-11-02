@@ -139,6 +139,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <button id="bFev" onclick="go('fev')">Fevereiro</button>
     <button id="bAbr" onclick="go('abr')">Abril</button>
     <button id="bMai" onclick="go('mai')">Maio</button>
+    <button id="bJun" onclick="go('jun')">Junho</button>
+    <button id="bJul" onclick="go('jul')">Julho</button>
+    <button id="bAgo" onclick="go('ago')">Agosto</button>
   </div>
 
   <!-- Table -->
@@ -193,7 +196,7 @@ async function init(){
 
 function go(m){
   cur=m;
-  ['jan','fev','abr','mai'].forEach(k=>{
+  ['jan','fev','abr','mai','jun','jul','ago'].forEach(k=>{
     const b=$('b'+k.charAt(0).toUpperCase()+k.slice(1));
     if(b)b.classList.toggle('on',k===m);
   });
@@ -221,7 +224,7 @@ function render(){
     <div class="hero-card dim"><div class="h-lab">Média Bruto Demais</div><div class="h-val" style="color:var(--dim)">${brl(d.avg_ncom)}</div><div class="h-sub">Mediana: ${brl(d.med_ncom)}</div></div>`;
 
   // Table title per month
-  const monthLabels={jan:'Janeiro',fev:'Fevereiro',abr:'Abril',mai:'Maio'};
+  const monthLabels={jan:'Janeiro',fev:'Fevereiro',abr:'Abril',mai:'Maio',jun:'Junho',jul:'Julho',ago:'Agosto'};
   $('tblTitle').textContent='Comissionados Identificados — '+monthLabels[cur];
   $('tblSearch').value='';
   
